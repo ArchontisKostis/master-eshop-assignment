@@ -6,12 +6,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uom.eshop.backend.dto.AddProductRequest;
 import uom.eshop.backend.dto.ProductResponse;
+import uom.eshop.backend.dto.ProductSearchRequest;
 import uom.eshop.backend.dto.UpdateProductStockRequest;
 import uom.eshop.backend.model.Product;
 import uom.eshop.backend.model.Store;
 import uom.eshop.backend.model.User;
 import uom.eshop.backend.repository.ProductRepository;
 import uom.eshop.backend.repository.StoreRepository;
+import uom.eshop.backend.specification.ProductSpecification;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -31,6 +33,7 @@ public class ProductService {
                 .orElseThrow(() -> new RuntimeException("Store profile not found for user"));
 
         Product product = Product.builder()
+                .title(request.getTitle())
                 .type(request.getType())
                 .brand(request.getBrand())
                 .description(request.getDescription())
@@ -87,9 +90,19 @@ public class ProductService {
         return mapToResponse(product);
     }
 
+    @Transactional(readOnly = true)
+    public List<ProductResponse> searchProducts(ProductSearchRequest request) {
+        List<Product> products = productRepository.findAll(ProductSpecification.filterProducts(request));
+        
+        return products.stream()
+                .map(this::mapToResponse)
+                .collect(Collectors.toList());
+    }
+
     private ProductResponse mapToResponse(Product product) {
         return ProductResponse.builder()
                 .id(product.getId())
+                .title(product.getTitle())
                 .type(product.getType())
                 .brand(product.getBrand())
                 .description(product.getDescription())

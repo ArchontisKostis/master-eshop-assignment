@@ -9,6 +9,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import uom.eshop.backend.dto.AddProductRequest;
 import uom.eshop.backend.dto.ProductResponse;
+import uom.eshop.backend.dto.ProductSearchRequest;
 import uom.eshop.backend.dto.UpdateProductStockRequest;
 import uom.eshop.backend.service.ProductService;
 
@@ -51,5 +52,19 @@ public class ProductController {
     public ResponseEntity<ProductResponse> getProductById(@PathVariable Long id) {
         ProductResponse response = productService.getProductById(id);
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<ProductResponse>> searchProducts(
+            @RequestParam(required = false) String title,
+            @RequestParam(required = false) String type,
+            @RequestParam(required = false) String brand,
+            @RequestParam(required = false) java.math.BigDecimal minPrice,
+            @RequestParam(required = false) java.math.BigDecimal maxPrice,
+            @RequestParam(required = false) Long storeId) {
+        
+        ProductSearchRequest request = new ProductSearchRequest(title, type, brand, minPrice, maxPrice, storeId);
+        List<ProductResponse> products = productService.searchProducts(request);
+        return ResponseEntity.ok(products);
     }
 }
