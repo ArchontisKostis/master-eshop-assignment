@@ -29,4 +29,21 @@ public class RegisterRequest {
     
     @NotNull(message = "Role is required")
     private Role role;
+    
+    // Customer-specific fields (required if role is CUSTOMER)
+    @Size(min = 9, max = 12, message = "Tax ID must be between 9 and 12 characters")
+    private String taxId;
+    
+    @Size(max = 100, message = "First name must not exceed 100 characters")
+    private String firstName;
+    
+    @Size(max = 100, message = "Last name must not exceed 100 characters")
+    private String lastName;
+    
+    // Store-specific fields (required if role is STORE)
+    @Size(max = 200, message = "Store name must not exceed 200 characters")
+    private String storeName;
+    
+    @Size(max = 200, message = "Owner name must not exceed 200 characters")
+    private String ownerName;
 }
