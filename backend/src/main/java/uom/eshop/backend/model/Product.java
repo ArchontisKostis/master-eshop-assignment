@@ -22,6 +22,11 @@ public class Product {
     private Long id;
 
     @NotBlank
+    @Size(max = 200)
+    @Column(nullable = false)
+    private String title;
+
+    @NotBlank
     @Size(max = 100)
     @Column(nullable = false)
     private String type;

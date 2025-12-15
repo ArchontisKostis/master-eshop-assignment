@@ -14,6 +14,7 @@ import java.math.BigDecimal;
 public class ProductResponse {
     
     private Long id;
+    private String title;
     private String type;
     private String brand;
     private String description;
