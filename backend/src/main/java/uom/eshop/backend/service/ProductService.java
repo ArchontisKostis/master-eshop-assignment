@@ -99,6 +99,51 @@ public class ProductService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional
+    public ProductResponse updateProduct(Long productId, AddProductRequest request, Authentication authentication) {
+        User user = (User) authentication.getPrincipal();
+        
+        Store store = storeRepository.findByUser(user)
+                .orElseThrow(() -> new RuntimeException("Store profile not found for user"));
+
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new RuntimeException("Product not found"));
+
+        // Verify that the product belongs to the authenticated store
+        if (!product.getStore().getId().equals(store.getId())) {
+            throw new RuntimeException("You can only update products from your own store");
+        }
+
+        product.setTitle(request.getTitle());
+        product.setType(request.getType());
+        product.setBrand(request.getBrand());
+        product.setDescription(request.getDescription());
+        product.setPrice(request.getPrice());
+        product.setStockQuantity(request.getStockQuantity());
+
+        product = productRepository.save(product);
+        
+        return mapToResponse(product);
+    }
+
+    @Transactional
+    public void deleteProduct(Long productId, Authentication authentication) {
+        User user = (User) authentication.getPrincipal();
+        
+        Store store = storeRepository.findByUser(user)
+                .orElseThrow(() -> new RuntimeException("Store profile not found for user"));
+
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new RuntimeException("Product not found"));
+
+        // Verify that the product belongs to the authenticated store
+        if (!product.getStore().getId().equals(store.getId())) {
+            throw new RuntimeException("You can only delete products from your own store");
+        }
+
+        productRepository.delete(product);
+    }
+
     private ProductResponse mapToResponse(Product product) {
         return ProductResponse.builder()
                 .id(product.getId())

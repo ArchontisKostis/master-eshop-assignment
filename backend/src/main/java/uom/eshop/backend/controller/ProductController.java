@@ -31,6 +31,16 @@ public class ProductController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
+    @PutMapping("/{id}")
+    @PreAuthorize("hasRole('STORE')")
+    public ResponseEntity<ProductResponse> updateProduct(
+            @PathVariable Long id,
+            @Valid @RequestBody AddProductRequest request,
+            Authentication authentication) {
+        ProductResponse response = productService.updateProduct(id, request, authentication);
+        return ResponseEntity.ok(response);
+    }
+
     @PatchMapping("/{id}/stock")
     @PreAuthorize("hasRole('STORE')")
     public ResponseEntity<ProductResponse> updateProductStock(
@@ -39,6 +49,15 @@ public class ProductController {
             Authentication authentication) {
         ProductResponse response = productService.updateProductStock(id, request, authentication);
         return ResponseEntity.ok(response);
+    }
+
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('STORE')")
+    public ResponseEntity<Void> deleteProduct(
+            @PathVariable Long id,
+            Authentication authentication) {
+        productService.deleteProduct(id, authentication);
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/store")
