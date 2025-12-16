@@ -1,6 +1,8 @@
 package uom.eshop.backend.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -8,13 +10,17 @@ import uom.eshop.backend.dto.AddProductRequest;
 import uom.eshop.backend.dto.ProductResponse;
 import uom.eshop.backend.dto.ProductSearchRequest;
 import uom.eshop.backend.dto.UpdateProductStockRequest;
+import uom.eshop.backend.model.Customer;
 import uom.eshop.backend.model.Product;
 import uom.eshop.backend.model.Store;
 import uom.eshop.backend.model.User;
+import uom.eshop.backend.repository.CustomerRepository;
+import uom.eshop.backend.repository.OrderRepository;
 import uom.eshop.backend.repository.ProductRepository;
 import uom.eshop.backend.repository.StoreRepository;
 import uom.eshop.backend.specification.ProductSpecification;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -24,6 +30,8 @@ public class ProductService {
 
     private final ProductRepository productRepository;
     private final StoreRepository storeRepository;
+    private final CustomerRepository customerRepository;
+    private final OrderRepository orderRepository;
 
     @Transactional
     public ProductResponse addProduct(AddProductRequest request, Authentication authentication) {
@@ -142,6 +150,56 @@ public class ProductService {
         }
 
         productRepository.delete(product);
+    }
+
+    @Transactional(readOnly = true)
+    public List<ProductResponse> getRecommendedProducts(Authentication authentication, int limit) {
+        User user = (User) authentication.getPrincipal();
+        
+        Customer customer = customerRepository.findByUser(user)
+                .orElseThrow(() -> new RuntimeException("Customer profile not found"));
+
+        // Get customer's purchase history
+        List<String> purchasedTypes = orderRepository.findDistinctProductTypesByCustomer(customer);
+        List<String> purchasedBrands = orderRepository.findDistinctProductBrandsByCustomer(customer);
+        List<Long> purchasedProductIds = orderRepository.findDistinctProductIdsByCustomer(customer);
+
+        // If customer has no purchase history, return popular/recent products
+        if (purchasedTypes.isEmpty() && purchasedBrands.isEmpty()) {
+            Pageable pageable = PageRequest.of(0, limit);
+            List<Product> products = productRepository.findAll(pageable).getContent();
+            return products.stream()
+                    .filter(p -> p.getStockQuantity() > 0)
+                    .map(this::mapToResponse)
+                    .collect(Collectors.toList());
+        }
+
+        // Ensure we have valid lists for the query
+        if (purchasedTypes.isEmpty()) {
+            purchasedTypes = new ArrayList<>();
+            purchasedTypes.add(""); // Add empty string to avoid SQL errors
+        }
+        if (purchasedBrands.isEmpty()) {
+            purchasedBrands = new ArrayList<>();
+            purchasedBrands.add(""); // Add empty string to avoid SQL errors
+        }
+        if (purchasedProductIds.isEmpty()) {
+            purchasedProductIds = new ArrayList<>();
+            purchasedProductIds.add(-1L); // Add non-existent ID
+        }
+
+        // Find products based on customer's preferred types and brands
+        Pageable pageable = PageRequest.of(0, limit);
+        List<Product> recommendedProducts = productRepository.findRecommendedProducts(
+                purchasedTypes,
+                purchasedBrands,
+                purchasedProductIds,
+                pageable
+        );
+
+        return recommendedProducts.stream()
+                .map(this::mapToResponse)
+                .collect(Collectors.toList());
     }
 
     private ProductResponse mapToResponse(Product product) {
