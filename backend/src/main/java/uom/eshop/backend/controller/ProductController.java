@@ -22,6 +22,15 @@ public class ProductController {
 
     private final ProductService productService;
 
+    @GetMapping("/recommendations")
+    @PreAuthorize("hasRole('CUSTOMER')")
+    public ResponseEntity<List<ProductResponse>> getRecommendations(
+            @RequestParam(defaultValue = "10") int limit,
+            Authentication authentication) {
+        List<ProductResponse> recommendations = productService.getRecommendedProducts(authentication, limit);
+        return ResponseEntity.ok(recommendations);
+    }
+
     @PostMapping
     @PreAuthorize("hasRole('STORE')")
     public ResponseEntity<ProductResponse> addProduct(
@@ -67,14 +76,8 @@ public class ProductController {
         return ResponseEntity.ok(products);
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<ProductResponse> getProductById(@PathVariable Long id) {
-        ProductResponse response = productService.getProductById(id);
-        return ResponseEntity.ok(response);
-    }
-
-    @GetMapping("/search")
-    public ResponseEntity<List<ProductResponse>> searchProducts(
+    @GetMapping
+    public ResponseEntity<List<ProductResponse>> getProducts(
             @RequestParam(required = false) String title,
             @RequestParam(required = false) String type,
             @RequestParam(required = false) String brand,
@@ -85,5 +88,11 @@ public class ProductController {
         ProductSearchRequest request = new ProductSearchRequest(title, type, brand, minPrice, maxPrice, storeId);
         List<ProductResponse> products = productService.searchProducts(request);
         return ResponseEntity.ok(products);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ProductResponse> getProductById(@PathVariable Long id) {
+        ProductResponse response = productService.getProductById(id);
+        return ResponseEntity.ok(response);
     }
 }
