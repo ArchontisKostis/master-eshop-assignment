@@ -1,12 +1,15 @@
 package uom.eshop.backend.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import uom.eshop.backend.dto.CheckoutResponse;
 import uom.eshop.backend.dto.OrderResponse;
+import uom.eshop.backend.dto.PaymentRequest;
 import uom.eshop.backend.model.Store;
 import uom.eshop.backend.model.User;
 import uom.eshop.backend.repository.OrderRepository;
@@ -14,6 +17,7 @@ import uom.eshop.backend.repository.StoreRepository;
 import uom.eshop.backend.service.OrderService;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @RestController
@@ -24,6 +28,37 @@ public class OrderController {
     private final OrderService orderService;
     private final StoreRepository storeRepository;
     private final OrderRepository orderRepository;
+
+    @PostMapping("/checkout")
+    @PreAuthorize("hasRole('CUSTOMER')")
+    public ResponseEntity<CheckoutResponse> checkout(
+            @Valid @RequestBody PaymentRequest paymentRequest,
+            Authentication authentication) {
+        
+        // Dummy payment simulation - always succeeds!
+        // In a real system, this would call a payment gateway
+        String transactionId = "TXN-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase();
+        
+        // Simulate payment processing delay (optional)
+        try {
+            Thread.sleep(500); // 500ms delay for realism
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+        
+        // Process the order (existing logic)
+        List<OrderResponse> orders = orderService.completeOrder(authentication);
+        
+        // Return checkout response with payment simulation
+        CheckoutResponse response = CheckoutResponse.builder()
+                .paymentStatus("SUCCESS")
+                .transactionId(transactionId)
+                .message("Payment processed successfully. Orders have been placed.")
+                .orders(orders)
+                .build();
+        
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
 
     @PostMapping
     @PreAuthorize("hasRole('CUSTOMER')")
@@ -36,6 +71,15 @@ public class OrderController {
     @PreAuthorize("hasRole('CUSTOMER')")
     public ResponseEntity<List<OrderResponse>> getCustomerOrders(Authentication authentication) {
         List<OrderResponse> orders = orderService.getCustomerOrders(authentication);
+        return ResponseEntity.ok(orders);
+    }
+
+    @GetMapping("/recent")
+    @PreAuthorize("hasRole('CUSTOMER')")
+    public ResponseEntity<List<OrderResponse>> getRecentOrders(
+            @RequestParam(defaultValue = "5") int limit,
+            Authentication authentication) {
+        List<OrderResponse> orders = orderService.getRecentCustomerOrders(authentication, limit);
         return ResponseEntity.ok(orders);
     }
 

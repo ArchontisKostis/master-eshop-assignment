@@ -1,6 +1,8 @@
 package uom.eshop.backend.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -120,6 +122,21 @@ public class OrderService {
                 .orElseThrow(() -> new RuntimeException("Customer profile not found"));
 
         List<Order> orders = orderRepository.findByCustomerOrderByOrderDateDesc(customer);
+        
+        return orders.stream()
+                .map(this::mapToOrderResponse)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public List<OrderResponse> getRecentCustomerOrders(Authentication authentication, int limit) {
+        User user = (User) authentication.getPrincipal();
+        
+        Customer customer = customerRepository.findByUser(user)
+                .orElseThrow(() -> new RuntimeException("Customer profile not found"));
+
+        Pageable pageable = PageRequest.of(0, limit);
+        List<Order> orders = orderRepository.findByCustomerOrderByOrderDateDesc(customer, pageable);
         
         return orders.stream()
                 .map(this::mapToOrderResponse)
