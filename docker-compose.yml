@@ -10,6 +10,41 @@ services:
       - "5435:5432"
     volumes:
       - eshop_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U eshop_user -d eshop"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: eshop_backend
+    environment:
+      DATABASE_URL: jdbc:postgresql://db:5432/eshop
+      DATABASE_USERNAME: eshop_user
+      DATABASE_PASSWORD: eshop_pass
+      JWT_SECRET: your-secret-key-here-must-be-at-least-256-bits-long-for-HS256-algorithm
+      JWT_EXPIRATION: 86400000
+      SERVER_PORT: 8080
+    ports:
+      - "8080:8080"
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: eshop_frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
 
   pgadmin:
     image: dpage/pgadmin4:7
