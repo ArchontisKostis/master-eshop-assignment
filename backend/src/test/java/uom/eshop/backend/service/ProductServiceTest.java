@@ -76,13 +76,14 @@ class ProductServiceTest {
                 .store(mockStore)
                 .build();
 
-        addProductRequest = new AddProductRequest();
-        addProductRequest.setTitle("iPhone 15 Pro");
-        addProductRequest.setType("Smartphone");
-        addProductRequest.setBrand("Apple");
-        addProductRequest.setDescription("Latest iPhone");
-        addProductRequest.setPrice(new BigDecimal("999.99"));
-        addProductRequest.setStockQuantity(50);
+        addProductRequest = AddProductRequest.builder()
+                .title("iPhone 15 Pro")
+                .type("Smartphone")
+                .brand("Apple")
+                .description("Latest iPhone")
+                .price(new BigDecimal("999.99"))
+                .stockQuantity(50)
+                .build();
     }
 
     @Test
@@ -128,7 +129,11 @@ class ProductServiceTest {
     void testUpdateProductStock_Success() {
         // Arrange
         when(authentication.getPrincipal()).thenReturn(mockStoreUser);
-        UpdateProductStockRequest request = new UpdateProductStockRequest(100);
+
+        UpdateProductStockRequest request = UpdateProductStockRequest.builder()
+                .stockQuantity(100)
+                .build();
+
         when(storeRepository.findByUser(mockStoreUser)).thenReturn(Optional.of(mockStore));
         when(productRepository.findById(1L)).thenReturn(Optional.of(mockProduct));
         when(productRepository.save(any(Product.class))).thenReturn(mockProduct);

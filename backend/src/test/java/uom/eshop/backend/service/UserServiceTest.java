@@ -53,24 +53,26 @@ class UserServiceTest {
     @BeforeEach
     void setUp() {
         // Setup customer registration request
-        customerRequest = new RegisterRequest();
-        customerRequest.setUsername("johndoe");
-        customerRequest.setEmail("john@example.com");
-        customerRequest.setPassword("password123");
-        customerRequest.setRole(Role.CUSTOMER);
-        customerRequest.setTaxId("123456789");
-        customerRequest.setFirstName("John");
-        customerRequest.setLastName("Doe");
+        customerRequest = RegisterRequest.builder()
+                .username("johndoe")
+                .email("john@example.com")
+                .password("password123")
+                .role(Role.CUSTOMER)
+                .taxId("123456789")
+                .firstName("John")
+                .lastName("Doe")
+                .build();
 
         // Setup store registration request
-        storeRequest = new RegisterRequest();
-        storeRequest.setUsername("techstore");
-        storeRequest.setEmail("tech@store.com");
-        storeRequest.setPassword("password123");
-        storeRequest.setRole(Role.STORE);
-        storeRequest.setTaxId("987654321");
-        storeRequest.setStoreName("Tech Store");
-        storeRequest.setOwnerName("Jane Smith");
+        storeRequest = RegisterRequest.builder()
+                .username("techstore")
+                .email("tech@store.com")
+                .password("password123")
+                .role(Role.STORE)
+                .taxId("987654321")
+                .storeName("Tech Store")
+                .ownerName("Jane Smith")
+                .build();
 
         // Setup mock user
         mockUser = User.builder()

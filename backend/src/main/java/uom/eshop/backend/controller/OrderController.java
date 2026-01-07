@@ -34,19 +34,10 @@ public class OrderController {
     public ResponseEntity<CheckoutResponse> checkout(
             @Valid @RequestBody PaymentRequest paymentRequest,
             Authentication authentication) {
+        // Simulate payment processing
+        String transactionId = simulatePaymentProcessing(paymentRequest);
         
-        // Dummy payment simulation - always succeeds!
-        // In a real system, this would call a payment gateway
-        String transactionId = "TXN-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase();
-        
-        // Simulate payment processing delay (optional)
-        try {
-            Thread.sleep(500); // 500ms delay for realism
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
-        
-        // Process the order (existing logic)
+        // Process the order
         List<OrderResponse> orders = orderService.completeOrder(authentication);
         
         // Return checkout response with payment simulation
@@ -125,5 +116,20 @@ public class OrderController {
             Authentication authentication) {
         OrderResponse order = orderService.getOrderById(id, authentication);
         return ResponseEntity.ok(order);
+    }
+
+    private String simulatePaymentProcessing(PaymentRequest paymentRequest) {
+        // Dummy payment simulation - always succeeds!
+        // In a real system, this would call a payment gateway
+        String transactionId = "TXN-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase();
+
+        // Simulate payment processing delay (optional)
+        try {
+            Thread.sleep(500); // 500ms delay for realism
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+
+        return transactionId;
     }
 }

@@ -94,8 +94,11 @@ class ShoppingCartServiceTest {
     @DisplayName("Should successfully add product to cart")
     void testAddProductToCart_Success() {
         // Arrange
-        AddToCartRequest request = new AddToCartRequest(1L, 2);
-        
+        AddToCartRequest request = AddToCartRequest.builder()
+                .productId(1L)
+                .quantity(2)
+                .build();
+
         when(customerRepository.findByUser(mockCustomerUser)).thenReturn(Optional.of(mockCustomer));
         when(shoppingCartRepository.findByCustomer(mockCustomer)).thenReturn(Optional.of(mockCart));
         when(productRepository.findById(1L)).thenReturn(Optional.of(mockProduct));

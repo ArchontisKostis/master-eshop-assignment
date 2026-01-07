@@ -5,64 +5,59 @@ import org.springframework.data.jpa.domain.Specification;
 import uom.eshop.backend.dto.ProductSearchRequest;
 import uom.eshop.backend.model.Product;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ProductSpecification {
 
     public static Specification<Product> filterProducts(ProductSearchRequest request) {
-        return (root, query, criteriaBuilder) -> {
-            List<Predicate> predicates = new ArrayList<>();
+        return Specification
+                .where(titleContains(request.getTitle()))
+                .and(typeContains(request.getType()))
+                .and(brandContains(request.getBrand()))
+                .and(minPrice(request.getMinPrice()))
+                .and(maxPrice(request.getMaxPrice()))
+                .and(storeIdEquals(request.getStoreId()));
+    }
 
-            // Filter by title (case-insensitive partial match)
-            if (request.getTitle() != null && !request.getTitle().isBlank()) {
-                predicates.add(criteriaBuilder.like(
-                        criteriaBuilder.lower(root.get("title")),
-                        "%" + request.getTitle().toLowerCase() + "%"
-                ));
-            }
+    private static Specification<Product> titleContains(String title) {
+        return (root, query, cb) ->
+                isBlank(title) ? null :
+                        cb.like(cb.lower(root.get("title")), "%" + title.toLowerCase() + "%");
+    }
 
-            // Filter by type (case-insensitive partial match)
-            if (request.getType() != null && !request.getType().isBlank()) {
-                predicates.add(criteriaBuilder.like(
-                        criteriaBuilder.lower(root.get("type")),
-                        "%" + request.getType().toLowerCase() + "%"
-                ));
-            }
+    private static Specification<Product> typeContains(String type) {
+        return (root, query, cb) ->
+                isBlank(type) ? null :
+                        cb.like(cb.lower(root.get("type")), "%" + type.toLowerCase() + "%");
+    }
 
-            // Filter by brand (case-insensitive partial match)
-            if (request.getBrand() != null && !request.getBrand().isBlank()) {
-                predicates.add(criteriaBuilder.like(
-                        criteriaBuilder.lower(root.get("brand")),
-                        "%" + request.getBrand().toLowerCase() + "%"
-                ));
-            }
+    private static Specification<Product> brandContains(String brand) {
+        return (root, query, cb) ->
+                isBlank(brand) ? null :
+                        cb.like(cb.lower(root.get("brand")), "%" + brand.toLowerCase() + "%");
+    }
 
-            // Filter by minimum price
-            if (request.getMinPrice() != null) {
-                predicates.add(criteriaBuilder.greaterThanOrEqualTo(
-                        root.get("price"),
-                        request.getMinPrice()
-                ));
-            }
+    private static Specification<Product> minPrice(BigDecimal minPrice) {
+        return (root, query, cb) ->
+                minPrice == null ? null :
+                        cb.greaterThanOrEqualTo(root.get("price"), minPrice);
+    }
 
-            // Filter by maximum price
-            if (request.getMaxPrice() != null) {
-                predicates.add(criteriaBuilder.lessThanOrEqualTo(
-                        root.get("price"),
-                        request.getMaxPrice()
-                ));
-            }
+    private static Specification<Product> maxPrice(BigDecimal maxPrice) {
+        return (root, query, cb) ->
+                maxPrice == null ? null :
+                        cb.lessThanOrEqualTo(root.get("price"), maxPrice);
+    }
 
-            // Filter by store ID
-            if (request.getStoreId() != null) {
-                predicates.add(criteriaBuilder.equal(
-                        root.get("store").get("id"),
-                        request.getStoreId()
-                ));
-            }
+    private static Specification<Product> storeIdEquals(Long storeId) {
+        return (root, query, cb) ->
+                storeId == null ? null :
+                        cb.equal(root.get("store").get("id"), storeId);
+    }
 
-            return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
-        };
+    private static boolean isBlank(String value) {
+        return value == null || value.isBlank();
     }
 }

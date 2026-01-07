@@ -15,6 +15,7 @@ import uom.eshop.backend.dto.RegisterRequest;
 import uom.eshop.backend.dto.RegisterResponse;
 import uom.eshop.backend.model.User;
 import uom.eshop.backend.security.JwtTokenProvider;
+import uom.eshop.backend.service.AuthService;
 import uom.eshop.backend.service.UserService;
 
 @RestController
@@ -22,30 +23,12 @@ import uom.eshop.backend.service.UserService;
 @RequiredArgsConstructor
 public class AuthController {
 
-    private final AuthenticationManager authenticationManager;
-    private final JwtTokenProvider tokenProvider;
+    private final AuthService authService;
     private final UserService userService;
 
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest loginRequest) {
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        loginRequest.getUsername(),
-                        loginRequest.getPassword()
-                )
-        );
-
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        String jwt = tokenProvider.generateToken(authentication);
-
-        User user = (User) authentication.getPrincipal();
-        LoginResponse response = new LoginResponse(
-                jwt,
-                user.getUsername(),
-                user.getEmail(),
-                user.getRole().name()
-        );
-
+        LoginResponse response = authService.login(loginRequest);
         return ResponseEntity.ok(response);
     }
 

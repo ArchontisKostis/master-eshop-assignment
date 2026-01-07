@@ -85,7 +85,15 @@ public class ProductController {
             @RequestParam(required = false) java.math.BigDecimal maxPrice,
             @RequestParam(required = false) Long storeId) {
         
-        ProductSearchRequest request = new ProductSearchRequest(title, type, brand, minPrice, maxPrice, storeId);
+        ProductSearchRequest request = ProductSearchRequest.builder()
+                .title(title)
+                .type(type)
+                .brand(brand)
+                .minPrice(minPrice)
+                .maxPrice(maxPrice)
+                .storeId(storeId)
+                .build();
+        
         List<ProductResponse> products = productService.searchProducts(request);
         return ResponseEntity.ok(products);
     }

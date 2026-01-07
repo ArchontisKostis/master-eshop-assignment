@@ -1,0 +1,40 @@
+package uom.eshop.backend.service;
+
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Service;
+import uom.eshop.backend.dto.LoginRequest;
+import uom.eshop.backend.dto.LoginResponse;
+import uom.eshop.backend.model.User;
+import uom.eshop.backend.security.JwtTokenProvider;
+
+@Service
+@RequiredArgsConstructor
+public class AuthService {
+    private final AuthenticationManager authenticationManager;
+    private final JwtTokenProvider tokenProvider;
+
+    public LoginResponse login(LoginRequest request) {
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        request.getUsername(),
+                        request.getPassword()
+                )
+        );
+
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        User user = (User) authentication.getPrincipal();
+        String jwt = tokenProvider.generateToken(authentication);
+
+        return new LoginResponse(
+                jwt,
+                user.getUsername(),
+                user.getEmail(),
+                user.getRole().name()
+        );
+    }
+}
