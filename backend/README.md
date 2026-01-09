@@ -96,9 +96,51 @@ mvn clean install
 
 # Run the application
 mvn spring-boot:run
+
+# Run with database seeding (dev/demo profile)
+mvn spring-boot:run -Dspring-boot.run.profiles=dev
 ```
 
 Application will start on `http://localhost:8080`
+
+### Database Seeding
+
+For development and demo purposes, the application includes a database seeder that populates the database with sample data.
+
+**To seed the database:**
+
+1. **Using Maven command:**
+   ```bash
+   mvn spring-boot:run -Dspring-boot.run.profiles=dev
+   ```
+
+2. **Or set profile in application.properties:**
+   ```properties
+   spring.profiles.active=dev
+   ```
+
+3. **Or using environment variable:**
+   ```bash
+   export SPRING_PROFILES_ACTIVE=dev
+   mvn spring-boot:run
+   ```
+
+The seeder will automatically:
+- Create 3 sample customers with shopping carts
+- Create 3 sample stores
+- Create 15 sample products (5 per store) across different categories
+
+**Test Credentials:**
+- **Customers:**
+  - `john_doe` / `password123`
+  - `jane_smith` / `password123`
+  - `bob_wilson` / `password123`
+- **Stores:**
+  - `tech_store` / `password123`
+  - `fashion_boutique` / `password123`
+  - `home_depot` / `password123`
+
+**Note:** The seeder only runs if the database is empty. To re-seed, you'll need to clear the database first (or change `spring.jpa.hibernate.ddl-auto` to `create-drop` temporarily).
 
 ### Access Swagger UI
 Open in browser: `http://localhost:8080/swagger-ui.html`
