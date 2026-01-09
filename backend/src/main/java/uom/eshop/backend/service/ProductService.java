@@ -3,6 +3,7 @@ package uom.eshop.backend.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -100,7 +101,8 @@ public class ProductService {
 
     @Transactional(readOnly = true)
     public List<ProductResponse> searchProducts(ProductSearchRequest request) {
-        List<Product> products = productRepository.findAll(ProductSpecification.filterProducts(request));
+        Specification<Product> specification = ProductSpecification.filterProducts(request);
+        List<Product> products = productRepository.findAll(specification);
         
         return products.stream()
                 .map(this::mapToResponse)

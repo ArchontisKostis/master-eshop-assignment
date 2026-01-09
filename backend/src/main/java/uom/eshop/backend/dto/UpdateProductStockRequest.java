@@ -15,4 +15,5 @@ public class UpdateProductStockRequest {
     @NotNull(message = "Stock quantity is required")
     @Min(value = 0, message = "Stock quantity cannot be negative")
     private Integer stockQuantity;
+
 }

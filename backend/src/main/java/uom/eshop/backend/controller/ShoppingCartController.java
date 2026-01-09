@@ -23,8 +23,13 @@ public class ShoppingCartController {
     public ResponseEntity<CartResponse> addToCart(
             @Valid @RequestBody AddToCartRequest request,
             Authentication authentication) {
-        CartResponse response = shoppingCartService.addProductToCart(request, authentication);
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+
+        CartResponse response = shoppingCartService
+                .addProductToCart(request, authentication);
+
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(response);
     }
 
     @GetMapping
