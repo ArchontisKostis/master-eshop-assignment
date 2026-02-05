@@ -9,6 +9,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import uom.eshop.backend.dto.RegisterRequest;
+import uom.eshop.backend.exceptions.BadRequestException;
+import uom.eshop.backend.exceptions.ConflictException;
 import uom.eshop.backend.model.Customer;
 import uom.eshop.backend.model.Role;
 import uom.eshop.backend.model.Store;
@@ -152,7 +154,7 @@ class UserServiceTest {
         when(userRepository.existsByUsername(customerRequest.getUsername())).thenReturn(true);
 
         // Act & Assert
-        RuntimeException exception = assertThrows(RuntimeException.class, 
+        ConflictException exception = assertThrows(ConflictException.class,
             () -> userService.registerUser(customerRequest));
         
         assertEquals("Username already exists", exception.getMessage());
@@ -167,7 +169,7 @@ class UserServiceTest {
         when(userRepository.existsByEmail(customerRequest.getEmail())).thenReturn(true);
 
         // Act & Assert
-        RuntimeException exception = assertThrows(RuntimeException.class, 
+        ConflictException exception = assertThrows(ConflictException.class,
             () -> userService.registerUser(customerRequest));
         
         assertEquals("Email already exists", exception.getMessage());
@@ -183,7 +185,7 @@ class UserServiceTest {
         when(customerRepository.existsByTaxId(customerRequest.getTaxId())).thenReturn(true);
 
         // Act & Assert
-        RuntimeException exception = assertThrows(RuntimeException.class, 
+        ConflictException exception = assertThrows(ConflictException.class,
             () -> userService.registerUser(customerRequest));
         
         assertEquals("Tax ID already exists", exception.getMessage());
@@ -200,7 +202,7 @@ class UserServiceTest {
         when(storeRepository.existsByTaxId(customerRequest.getTaxId())).thenReturn(true);
 
         // Act & Assert
-        RuntimeException exception = assertThrows(RuntimeException.class, 
+        ConflictException exception = assertThrows(ConflictException.class,
             () -> userService.registerUser(customerRequest));
         
         assertEquals("Tax ID already exists", exception.getMessage());
@@ -216,7 +218,7 @@ class UserServiceTest {
         when(userRepository.existsByEmail(customerRequest.getEmail())).thenReturn(false);
 
         // Act & Assert
-        RuntimeException exception = assertThrows(RuntimeException.class, 
+        BadRequestException exception = assertThrows(BadRequestException.class,
             () -> userService.registerUser(customerRequest));
         
         assertEquals("Tax ID is required for customer registration", exception.getMessage());
@@ -233,7 +235,7 @@ class UserServiceTest {
         when(storeRepository.existsByTaxId(customerRequest.getTaxId())).thenReturn(false);
 
         // Act & Assert
-        RuntimeException exception = assertThrows(RuntimeException.class, 
+        BadRequestException exception = assertThrows(BadRequestException.class,
             () -> userService.registerUser(customerRequest));
         
         assertEquals("First name is required for customer registration", exception.getMessage());
@@ -250,7 +252,7 @@ class UserServiceTest {
         when(storeRepository.existsByTaxId(storeRequest.getTaxId())).thenReturn(false);
 
         // Act & Assert
-        RuntimeException exception = assertThrows(RuntimeException.class, 
+        BadRequestException exception = assertThrows(BadRequestException.class,
             () -> userService.registerUser(storeRequest));
         
         assertEquals("Store name is required for store registration", exception.getMessage());

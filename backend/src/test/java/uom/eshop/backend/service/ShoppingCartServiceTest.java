@@ -10,6 +10,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.core.Authentication;
 import uom.eshop.backend.dto.AddToCartRequest;
 import uom.eshop.backend.dto.CartResponse;
+import uom.eshop.backend.exceptions.InsufficientStockException;
 import uom.eshop.backend.model.*;
 import uom.eshop.backend.repository.*;
 
@@ -127,7 +128,7 @@ class ShoppingCartServiceTest {
         when(productRepository.findById(1L)).thenReturn(Optional.of(mockProduct));
 
         // Act & Assert
-        RuntimeException exception = assertThrows(RuntimeException.class, 
+        InsufficientStockException exception = assertThrows(InsufficientStockException.class,
             () -> shoppingCartService.addProductToCart(request, authentication));
         
         assertTrue(exception.getMessage().contains("Insufficient stock"));
@@ -224,7 +225,7 @@ class ShoppingCartServiceTest {
         when(cartItemRepository.findByCartAndProduct(mockCart, mockProduct)).thenReturn(Optional.of(existingItem));
 
         // Act & Assert
-        RuntimeException exception = assertThrows(RuntimeException.class, 
+        InsufficientStockException exception = assertThrows(InsufficientStockException.class,
             () -> shoppingCartService.updateCartItemQuantity(1L, 100, authentication));
         
         assertTrue(exception.getMessage().contains("Insufficient stock"));

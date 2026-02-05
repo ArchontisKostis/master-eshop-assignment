@@ -9,6 +9,10 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.core.Authentication;
 import uom.eshop.backend.dto.OrderResponse;
+import uom.eshop.backend.exceptions.BadRequestException;
+import uom.eshop.backend.exceptions.ForbiddenException;
+import uom.eshop.backend.exceptions.InsufficientStockException;
+import uom.eshop.backend.exceptions.NotFoundException;
 import uom.eshop.backend.model.*;
 import uom.eshop.backend.repository.*;
 
@@ -199,7 +203,7 @@ class OrderServiceTest {
         when(shoppingCartRepository.findByCustomer(mockCustomer)).thenReturn(Optional.of(emptyCart));
 
         // Act & Assert
-        RuntimeException exception = assertThrows(RuntimeException.class, 
+        BadRequestException exception = assertThrows(BadRequestException.class,
             () -> orderService.completeOrder(authentication));
         
         assertEquals("Cart is empty", exception.getMessage());
@@ -217,7 +221,7 @@ class OrderServiceTest {
         when(shoppingCartRepository.findByCustomer(mockCustomer)).thenReturn(Optional.of(mockCart));
 
         // Act & Assert
-        RuntimeException exception = assertThrows(RuntimeException.class, 
+        InsufficientStockException exception = assertThrows(InsufficientStockException.class,
             () -> orderService.completeOrder(authentication));
         
         assertTrue(exception.getMessage().contains("Insufficient stock"));
@@ -301,7 +305,7 @@ class OrderServiceTest {
         when(customerRepository.findByUser(mockCustomerUser)).thenReturn(Optional.of(mockCustomer));
 
         // Act & Assert
-        RuntimeException exception = assertThrows(RuntimeException.class, 
+        ForbiddenException exception = assertThrows(ForbiddenException.class,
             () -> orderService.getOrderById(1L, authentication));
         
         assertEquals("You don't have permission to view this order", exception.getMessage());
@@ -314,7 +318,7 @@ class OrderServiceTest {
         when(orderRepository.findById(999L)).thenReturn(Optional.empty());
 
         // Act & Assert
-        RuntimeException exception = assertThrows(RuntimeException.class, 
+        NotFoundException exception = assertThrows(NotFoundException.class,
             () -> orderService.getOrderById(999L, authentication));
         
         assertEquals("Order not found", exception.getMessage());

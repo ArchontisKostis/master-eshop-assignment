@@ -11,6 +11,8 @@ import org.springframework.security.core.Authentication;
 import uom.eshop.backend.dto.AddProductRequest;
 import uom.eshop.backend.dto.ProductResponse;
 import uom.eshop.backend.dto.UpdateProductStockRequest;
+import uom.eshop.backend.exceptions.ForbiddenException;
+import uom.eshop.backend.exceptions.NotFoundException;
 import uom.eshop.backend.model.Product;
 import uom.eshop.backend.model.Role;
 import uom.eshop.backend.model.Store;
@@ -117,7 +119,7 @@ class ProductServiceTest {
         when(storeRepository.findByUser(mockStoreUser)).thenReturn(Optional.empty());
 
         // Act & Assert
-        RuntimeException exception = assertThrows(RuntimeException.class, 
+        NotFoundException exception = assertThrows(NotFoundException.class,
             () -> productService.addProduct(addProductRequest, authentication));
         
         assertEquals("Store profile not found for user", exception.getMessage());
@@ -162,7 +164,7 @@ class ProductServiceTest {
         when(productRepository.findById(2L)).thenReturn(Optional.of(anotherProduct));
 
         // Act & Assert
-        RuntimeException exception = assertThrows(RuntimeException.class, 
+        ForbiddenException exception = assertThrows(ForbiddenException.class,
             () -> productService.updateProductStock(2L, request, authentication));
         
         assertEquals("You can only update products from your own store", exception.getMessage());
@@ -222,7 +224,7 @@ class ProductServiceTest {
         when(productRepository.findById(999L)).thenReturn(Optional.empty());
 
         // Act & Assert
-        RuntimeException exception = assertThrows(RuntimeException.class, 
+        NotFoundException exception = assertThrows(NotFoundException.class,
             () -> productService.getProductById(999L));
         
         assertEquals("Product not found", exception.getMessage());
@@ -275,7 +277,7 @@ class ProductServiceTest {
         when(productRepository.findById(2L)).thenReturn(Optional.of(anotherProduct));
 
         // Act & Assert
-        RuntimeException exception = assertThrows(RuntimeException.class, 
+        ForbiddenException exception = assertThrows(ForbiddenException.class,
             () -> productService.deleteProduct(2L, authentication));
         
         assertEquals("You can only delete products from your own store", exception.getMessage());
