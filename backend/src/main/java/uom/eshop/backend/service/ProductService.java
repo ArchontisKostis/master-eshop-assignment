@@ -11,6 +11,8 @@ import uom.eshop.backend.dto.AddProductRequest;
 import uom.eshop.backend.dto.ProductResponse;
 import uom.eshop.backend.dto.ProductSearchRequest;
 import uom.eshop.backend.dto.UpdateProductStockRequest;
+import uom.eshop.backend.exceptions.ForbiddenException;
+import uom.eshop.backend.exceptions.NotFoundException;
 import uom.eshop.backend.model.Customer;
 import uom.eshop.backend.model.Product;
 import uom.eshop.backend.model.Store;
@@ -39,7 +41,7 @@ public class ProductService {
         User user = (User) authentication.getPrincipal();
         
         Store store = storeRepository.findByUser(user)
-                .orElseThrow(() -> new RuntimeException("Store profile not found for user"));
+                .orElseThrow(() -> new NotFoundException("Store profile not found for user"));
 
         Product product = Product.builder()
                 .title(request.getTitle())
@@ -61,14 +63,14 @@ public class ProductService {
         User user = (User) authentication.getPrincipal();
         
         Store store = storeRepository.findByUser(user)
-                .orElseThrow(() -> new RuntimeException("Store profile not found for user"));
+                .orElseThrow(() -> new NotFoundException("Store profile not found for user"));
 
         Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new RuntimeException("Product not found"));
+                .orElseThrow(() -> new NotFoundException("Product not found"));
 
         // Verify that the product belongs to the authenticated store
         if (!product.getStore().getId().equals(store.getId())) {
-            throw new RuntimeException("You can only update products from your own store");
+            throw new ForbiddenException("You can only update products from your own store");
         }
 
         product.setStockQuantity(request.getStockQuantity());
@@ -82,7 +84,7 @@ public class ProductService {
         User user = (User) authentication.getPrincipal();
         
         Store store = storeRepository.findByUser(user)
-                .orElseThrow(() -> new RuntimeException("Store profile not found for user"));
+                .orElseThrow(() -> new NotFoundException("Store profile not found for user"));
 
         List<Product> products = productRepository.findByStore(store);
         
@@ -94,7 +96,7 @@ public class ProductService {
     @Transactional(readOnly = true)
     public ProductResponse getProductById(Long productId) {
         Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new RuntimeException("Product not found"));
+                .orElseThrow(() -> new NotFoundException("Product not found"));
         
         return mapToResponse(product);
     }
@@ -114,14 +116,14 @@ public class ProductService {
         User user = (User) authentication.getPrincipal();
         
         Store store = storeRepository.findByUser(user)
-                .orElseThrow(() -> new RuntimeException("Store profile not found for user"));
+                .orElseThrow(() -> new NotFoundException("Store profile not found for user"));
 
         Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new RuntimeException("Product not found"));
+                .orElseThrow(() -> new NotFoundException("Product not found"));
 
         // Verify that the product belongs to the authenticated store
         if (!product.getStore().getId().equals(store.getId())) {
-            throw new RuntimeException("You can only update products from your own store");
+            throw new ForbiddenException("You can only update products from your own store");
         }
 
         product.setTitle(request.getTitle());
@@ -141,14 +143,14 @@ public class ProductService {
         User user = (User) authentication.getPrincipal();
         
         Store store = storeRepository.findByUser(user)
-                .orElseThrow(() -> new RuntimeException("Store profile not found for user"));
+                .orElseThrow(() -> new NotFoundException("Store profile not found for user"));
 
         Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new RuntimeException("Product not found"));
+                .orElseThrow(() -> new NotFoundException("Product not found"));
 
         // Verify that the product belongs to the authenticated store
         if (!product.getStore().getId().equals(store.getId())) {
-            throw new RuntimeException("You can only delete products from your own store");
+            throw new ForbiddenException("You can only delete products from your own store");
         }
 
         productRepository.delete(product);
@@ -159,7 +161,7 @@ public class ProductService {
         User user = (User) authentication.getPrincipal();
         
         Customer customer = customerRepository.findByUser(user)
-                .orElseThrow(() -> new RuntimeException("Customer profile not found"));
+                .orElseThrow(() -> new NotFoundException("Customer profile not found"));
 
         // Get customer's purchase history
         List<String> purchasedTypes = orderRepository.findDistinctProductTypesByCustomer(customer);

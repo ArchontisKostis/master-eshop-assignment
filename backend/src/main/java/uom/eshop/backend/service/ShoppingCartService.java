@@ -6,6 +6,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uom.eshop.backend.dto.AddToCartRequest;
 import uom.eshop.backend.dto.CartResponse;
+import uom.eshop.backend.exceptions.InsufficientStockException;
+import uom.eshop.backend.exceptions.NotFoundException;
 import uom.eshop.backend.model.*;
 import uom.eshop.backend.repository.*;
 
@@ -25,17 +27,17 @@ public class ShoppingCartService {
         User user = (User) authentication.getPrincipal();
         
         Customer customer = customerRepository.findByUser(user)
-                .orElseThrow(() -> new RuntimeException("Customer profile not found"));
+                .orElseThrow(() -> new NotFoundException("Customer profile not found"));
 
         ShoppingCart cart = shoppingCartRepository.findByCustomer(customer)
-                .orElseThrow(() -> new RuntimeException("Shopping cart not found"));
+                .orElseThrow(() -> new NotFoundException("Shopping cart not found"));
 
         Product product = productRepository.findById(request.getProductId())
-                .orElseThrow(() -> new RuntimeException("Product not found"));
+                .orElseThrow(() -> new NotFoundException("Product not found"));
 
         // Validate stock availability
         if (product.getStockQuantity() < request.getQuantity()) {
-            throw new RuntimeException("Insufficient stock. Available: " + product.getStockQuantity());
+            throw new InsufficientStockException("Insufficient stock. Available: " + product.getStockQuantity());
         }
 
         // Check if product is already in cart
@@ -47,7 +49,7 @@ public class ShoppingCartService {
             int newQuantity = cartItem.getQuantity() + request.getQuantity();
             
             if (product.getStockQuantity() < newQuantity) {
-                throw new RuntimeException("Insufficient stock. Available: " + product.getStockQuantity() + 
+                throw new InsufficientStockException("Insufficient stock. Available: " + product.getStockQuantity() + 
                                          ", In cart: " + cartItem.getQuantity());
             }
             
@@ -76,10 +78,10 @@ public class ShoppingCartService {
         User user = (User) authentication.getPrincipal();
         
         Customer customer = customerRepository.findByUser(user)
-                .orElseThrow(() -> new RuntimeException("Customer profile not found"));
+                .orElseThrow(() -> new NotFoundException("Customer profile not found"));
 
         ShoppingCart cart = shoppingCartRepository.findByCustomer(customer)
-                .orElseThrow(() -> new RuntimeException("Shopping cart not found"));
+                .orElseThrow(() -> new NotFoundException("Shopping cart not found"));
 
         return mapToCartResponse(cart);
     }
@@ -89,20 +91,20 @@ public class ShoppingCartService {
         User user = (User) authentication.getPrincipal();
         
         Customer customer = customerRepository.findByUser(user)
-                .orElseThrow(() -> new RuntimeException("Customer profile not found"));
+                .orElseThrow(() -> new NotFoundException("Customer profile not found"));
 
         ShoppingCart cart = shoppingCartRepository.findByCustomer(customer)
-                .orElseThrow(() -> new RuntimeException("Shopping cart not found"));
+                .orElseThrow(() -> new NotFoundException("Shopping cart not found"));
 
         Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new RuntimeException("Product not found"));
+                .orElseThrow(() -> new NotFoundException("Product not found"));
 
         CartItem cartItem = cartItemRepository.findByCartAndProduct(cart, product)
-                .orElseThrow(() -> new RuntimeException("Product not in cart"));
+                .orElseThrow(() -> new NotFoundException("Product not in cart"));
 
         // Validate stock availability
         if (product.getStockQuantity() < quantity) {
-            throw new RuntimeException("Insufficient stock. Available: " + product.getStockQuantity());
+            throw new InsufficientStockException("Insufficient stock. Available: " + product.getStockQuantity());
         }
 
         cartItem.setQuantity(quantity);
@@ -120,16 +122,16 @@ public class ShoppingCartService {
         User user = (User) authentication.getPrincipal();
         
         Customer customer = customerRepository.findByUser(user)
-                .orElseThrow(() -> new RuntimeException("Customer profile not found"));
+                .orElseThrow(() -> new NotFoundException("Customer profile not found"));
 
         ShoppingCart cart = shoppingCartRepository.findByCustomer(customer)
-                .orElseThrow(() -> new RuntimeException("Shopping cart not found"));
+                .orElseThrow(() -> new NotFoundException("Shopping cart not found"));
 
         Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new RuntimeException("Product not found"));
+                .orElseThrow(() -> new NotFoundException("Product not found"));
 
         CartItem cartItem = cartItemRepository.findByCartAndProduct(cart, product)
-                .orElseThrow(() -> new RuntimeException("Product not in cart"));
+                .orElseThrow(() -> new NotFoundException("Product not in cart"));
 
         cart.getItems().remove(cartItem);
         cartItemRepository.delete(cartItem);

@@ -5,6 +5,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uom.eshop.backend.dto.CustomerStatsResponse;
+import uom.eshop.backend.exceptions.NotFoundException;
 import uom.eshop.backend.model.Customer;
 import uom.eshop.backend.model.OrderStatus;
 import uom.eshop.backend.model.ShoppingCart;
@@ -28,7 +29,7 @@ public class CustomerService {
         User user = (User) authentication.getPrincipal();
         
         Customer customer = customerRepository.findByUser(user)
-                .orElseThrow(() -> new RuntimeException("Customer profile not found"));
+                .orElseThrow(() -> new NotFoundException("Customer profile not found"));
 
         // Get shopping cart stats
         ShoppingCart cart = shoppingCartRepository.findByCustomer(customer)

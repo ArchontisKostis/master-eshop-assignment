@@ -8,6 +8,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uom.eshop.backend.dto.RegisterRequest;
+import uom.eshop.backend.exceptions.BadRequestException;
+import uom.eshop.backend.exceptions.ConflictException;
 import uom.eshop.backend.model.*;
 import uom.eshop.backend.repository.*;
 
@@ -34,19 +36,19 @@ public class UserService implements UserDetailsService {
     public User registerUser(RegisterRequest request) {
         // Validate basic fields
         if (userRepository.existsByUsername(request.getUsername())) {
-            throw new RuntimeException("Username already exists");
+            throw new ConflictException("Username already exists");
         }
         if (userRepository.existsByEmail(request.getEmail())) {
-            throw new RuntimeException("Email already exists");
+            throw new ConflictException("Email already exists");
         }
 
         // Validate tax ID uniqueness across both customers and stores
         if (request.getTaxId() != null && !request.getTaxId().isBlank()) {
             if (customerRepository.existsByTaxId(request.getTaxId())) {
-                throw new RuntimeException("Tax ID already exists");
+                throw new ConflictException("Tax ID already exists");
             }
             if (storeRepository.existsByTaxId(request.getTaxId())) {
-                throw new RuntimeException("Tax ID already exists");
+                throw new ConflictException("Tax ID already exists");
             }
         }
 
@@ -85,25 +87,25 @@ public class UserService implements UserDetailsService {
 
     private void validateCustomerFields(RegisterRequest request) {
         if (request.getTaxId() == null || request.getTaxId().isBlank()) {
-            throw new RuntimeException("Tax ID is required for customer registration");
+            throw new BadRequestException("Tax ID is required for customer registration");
         }
         if (request.getFirstName() == null || request.getFirstName().isBlank()) {
-            throw new RuntimeException("First name is required for customer registration");
+            throw new BadRequestException("First name is required for customer registration");
         }
         if (request.getLastName() == null || request.getLastName().isBlank()) {
-            throw new RuntimeException("Last name is required for customer registration");
+            throw new BadRequestException("Last name is required for customer registration");
         }
     }
 
     private void validateStoreFields(RegisterRequest request) {
         if (request.getTaxId() == null || request.getTaxId().isBlank()) {
-            throw new RuntimeException("Tax ID is required for store registration");
+            throw new BadRequestException("Tax ID is required for store registration");
         }
         if (request.getStoreName() == null || request.getStoreName().isBlank()) {
-            throw new RuntimeException("Store name is required for store registration");
+            throw new BadRequestException("Store name is required for store registration");
         }
         if (request.getOwnerName() == null || request.getOwnerName().isBlank()) {
-            throw new RuntimeException("Owner name is required for store registration");
+            throw new BadRequestException("Owner name is required for store registration");
         }
     }
 

@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uom.eshop.backend.dto.OrderResponse;
 import uom.eshop.backend.dto.StoreStatsResponse;
+import uom.eshop.backend.exceptions.NotFoundException;
 import uom.eshop.backend.model.Order;
 import uom.eshop.backend.model.OrderStatus;
 import uom.eshop.backend.model.Store;
@@ -33,7 +34,7 @@ public class StoreService {
         User user = (User) authentication.getPrincipal();
         
         Store store = storeRepository.findByUser(user)
-                .orElseThrow(() -> new RuntimeException("Store profile not found"));
+                .orElseThrow(() -> new NotFoundException("Store profile not found"));
 
         // Get product statistics
         Long totalProducts = productRepository.countByStore(store);
@@ -64,7 +65,7 @@ public class StoreService {
         User user = (User) authentication.getPrincipal();
         
         Store store = storeRepository.findByUser(user)
-                .orElseThrow(() -> new RuntimeException("Store profile not found"));
+                .orElseThrow(() -> new NotFoundException("Store profile not found"));
 
         Pageable pageable = PageRequest.of(0, limit);
         List<Order> orders = orderRepository.findByStoreOrderByOrderDateDesc(store, pageable);

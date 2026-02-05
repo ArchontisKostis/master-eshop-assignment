@@ -7,6 +7,10 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uom.eshop.backend.dto.OrderResponse;
+import uom.eshop.backend.exceptions.BadRequestException;
+import uom.eshop.backend.exceptions.ForbiddenException;
+import uom.eshop.backend.exceptions.InsufficientStockException;
+import uom.eshop.backend.exceptions.NotFoundException;
 import uom.eshop.backend.model.*;
 import uom.eshop.backend.repository.*;
 
@@ -32,14 +36,14 @@ public class OrderService {
         User user = (User) authentication.getPrincipal();
         
         Customer customer = customerRepository.findByUser(user)
-                .orElseThrow(() -> new RuntimeException("Customer profile not found"));
+                .orElseThrow(() -> new NotFoundException("Customer profile not found"));
 
         ShoppingCart cart = shoppingCartRepository.findByCustomer(customer)
-                .orElseThrow(() -> new RuntimeException("Shopping cart not found"));
+                .orElseThrow(() -> new NotFoundException("Shopping cart not found"));
 
         // Validate cart is not empty
         if (cart.getItems().isEmpty()) {
-            throw new RuntimeException("Cart is empty");
+            throw new BadRequestException("Cart is empty");
         }
 
         // Group cart items by store
@@ -57,7 +61,7 @@ public class OrderService {
             for (CartItem cartItem : storeItems) {
                 Product product = cartItem.getProduct();
                 if (product.getStockQuantity() < cartItem.getQuantity()) {
-                    throw new RuntimeException(
+                    throw new InsufficientStockException(
                         "Insufficient stock for product: " + product.getTitle() + 
                         ". Available: " + product.getStockQuantity() + 
                         ", Requested: " + cartItem.getQuantity()
@@ -119,7 +123,7 @@ public class OrderService {
         User user = (User) authentication.getPrincipal();
         
         Customer customer = customerRepository.findByUser(user)
-                .orElseThrow(() -> new RuntimeException("Customer profile not found"));
+                .orElseThrow(() -> new NotFoundException("Customer profile not found"));
 
         List<Order> orders = orderRepository.findByCustomerOrderByOrderDateDesc(customer);
         
@@ -133,7 +137,7 @@ public class OrderService {
         User user = (User) authentication.getPrincipal();
         
         Customer customer = customerRepository.findByUser(user)
-                .orElseThrow(() -> new RuntimeException("Customer profile not found"));
+                .orElseThrow(() -> new NotFoundException("Customer profile not found"));
 
         Pageable pageable = PageRequest.of(0, limit);
         List<Order> orders = orderRepository.findByCustomerOrderByOrderDateDesc(customer, pageable);
@@ -146,17 +150,17 @@ public class OrderService {
     @Transactional(readOnly = true)
     public OrderResponse getOrderById(Long orderId, Authentication authentication) {
         Order order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new RuntimeException("Order not found"));
+                .orElseThrow(() -> new NotFoundException("Order not found"));
 
         User user = (User) authentication.getPrincipal();
 
         // Authorization check - verify user has access to this order
         if (user.getRole() == Role.CUSTOMER) {
             Customer customer = customerRepository.findByUser(user)
-                    .orElseThrow(() -> new RuntimeException("Customer profile not found"));
+                    .orElseThrow(() -> new NotFoundException("Customer profile not found"));
             
             if (!order.getCustomer().getId().equals(customer.getId())) {
-                throw new RuntimeException("You don't have permission to view this order");
+                throw new ForbiddenException("You don't have permission to view this order");
             }
         }
 
