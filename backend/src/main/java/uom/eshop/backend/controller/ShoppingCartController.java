@@ -9,6 +9,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import uom.eshop.backend.dto.AddToCartRequest;
 import uom.eshop.backend.dto.CartResponse;
+import uom.eshop.backend.exceptions.BadRequestException;
 import uom.eshop.backend.service.ShoppingCartService;
 
 @RestController
@@ -43,9 +44,9 @@ public class ShoppingCartController {
             @PathVariable Long productId,
             @RequestParam Integer quantity,
             Authentication authentication) {
-        
+
         if (quantity < 1) {
-            throw new RuntimeException("Quantity must be at least 1");
+            throw new BadRequestException("Quantity must be at least 1");
         }
         
         CartResponse response = shoppingCartService.updateCartItemQuantity(productId, quantity, authentication);

@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import uom.eshop.backend.dto.OrderResponse;
 import uom.eshop.backend.dto.StoreResponse;
 import uom.eshop.backend.dto.StoreStatsResponse;
+import uom.eshop.backend.exceptions.NotFoundException;
 import uom.eshop.backend.model.Store;
 import uom.eshop.backend.repository.StoreRepository;
 import uom.eshop.backend.service.StoreService;
@@ -42,7 +43,7 @@ public class StoreController {
     @GetMapping("/{id}")
     public ResponseEntity<StoreResponse> getStoreById(@PathVariable Long id) {
         Store store = storeRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Store not found"));
+                .orElseThrow(() -> new NotFoundException("Store not found"));
         
         StoreResponse response = StoreResponse.builder()
                 .id(store.getId())

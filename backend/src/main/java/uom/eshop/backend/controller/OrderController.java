@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import uom.eshop.backend.dto.CheckoutResponse;
 import uom.eshop.backend.dto.OrderResponse;
 import uom.eshop.backend.dto.PaymentRequest;
+import uom.eshop.backend.exceptions.NotFoundException;
 import uom.eshop.backend.model.Store;
 import uom.eshop.backend.model.User;
 import uom.eshop.backend.repository.OrderRepository;
@@ -80,7 +81,7 @@ public class OrderController {
         User user = (User) authentication.getPrincipal();
         
         Store store = storeRepository.findByUser(user)
-                .orElseThrow(() -> new RuntimeException("Store profile not found"));
+                .orElseThrow(() -> new NotFoundException("Store profile not found"));
 
         List<OrderResponse> orders = orderRepository.findByStoreOrderByOrderDateDesc(store)
                 .stream()
