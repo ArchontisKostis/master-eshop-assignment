@@ -30,13 +30,14 @@ import { getOrderController } from '../api/order-controller/order-controller';
 import { useCart } from '../hooks/useCart';
 import { useToast } from '../contexts/ToastContext';
 import { ROUTES } from '../constants/routes';
+import { getApiError } from '../api/api-error';
 
 const steps = ['Review Cart', 'Payment Details', 'Complete Order'];
 
 export const CheckoutPage: React.FC = () => {
   const [activeStep, setActiveStep] = useState(0);
   const [loading, setLoading] = useState(false);
-  const { cart } = useCart();
+  const { cart, refreshCart } = useCart();
   const { showToast } = useToast();
   const navigate = useNavigate();
 
@@ -88,7 +89,38 @@ export const CheckoutPage: React.FC = () => {
         navigate(ROUTES.ORDERS);
       }, 2000);
     } catch (err) {
-      showToast('Payment failed. Please try again.', 'error');
+      const apiError = getApiError(err);
+
+      if (apiError) {
+        if (apiError.code === 'InsufficientStockException') {
+          // Business rule violation – reflect stock issue and refresh cart
+          showToast(
+            apiError.message || 'Insufficient stock for one or more items in your cart.',
+            'warning'
+          );
+          await refreshCart();
+        } else if (
+          apiError.status === 400 &&
+          (apiError.code === 'BadRequestException' || apiError.code === 'BusinessRuleException')
+        ) {
+          showToast(
+            apiError.message || 'Unable to complete order. Please review your cart.',
+            'warning'
+          );
+        } else if (apiError.status === 403) {
+          showToast(apiError.message || 'You are not allowed to complete this order.', 'error');
+        } else if (apiError.status === 500) {
+          showToast(
+            apiError.message || 'Something went wrong while completing your order.',
+            'error'
+          );
+        } else {
+          showToast(apiError.message || 'Payment failed. Please try again.', 'warning');
+        }
+      } else {
+        showToast('Payment failed. Please try again.', 'error');
+      }
+
       console.error('Complete order error:', err);
     } finally {
       setLoading(false);

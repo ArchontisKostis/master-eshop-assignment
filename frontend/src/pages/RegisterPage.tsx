@@ -15,6 +15,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { CustomerRegisterForm } from '../components/auth/CustomerRegisterForm';
 import { StoreRegisterForm } from '../components/auth/StoreRegisterForm';
 import { ROUTES } from '../constants/routes';
+import { getApiError, getApiErrorAsync } from '../api/api-error';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -98,7 +99,28 @@ export const RegisterPage: React.FC = () => {
         state: { message: 'Registration successful! Please login to continue.' }
       });
     } catch (err) {
-      setError('Registration failed. Please try again.');
+      // Try to parse detailed ApiError from backend (works even when Orval uses responseType "blob")
+      const apiError = await getApiErrorAsync(err);
+
+      if (apiError) {
+        if (apiError.status === 409 && apiError.code === 'ConflictException') {
+          // Username/email/taxId already exists
+          setError(apiError.message || 'Username, email or tax ID already exists.');
+        } else if (
+          apiError.status === 400 &&
+          (apiError.code === 'BadRequestException' || apiError.code === 'ValidationException')
+        ) {
+          // Validation / bad request errors from backend
+          setError(apiError.message || 'Please review your input and try again.');
+        } else {
+          setError(apiError.message || 'Registration failed. Please try again.');
+        }
+      } else {
+        // Fallback – also log the raw error for debugging
+        const fallbackMessage = getApiError(err)?.message;
+        setError(fallbackMessage || 'Registration failed. Please try again.');
+      }
+
       console.error('Registration error:', err);
     } finally {
       setLoading(false);

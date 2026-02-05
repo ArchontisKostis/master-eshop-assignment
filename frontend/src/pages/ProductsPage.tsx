@@ -20,6 +20,7 @@ import type { ProductResponse, GetProductsParams, StoreResponse } from '../api/g
 import { ProductFilters } from '../components/products/ProductFilters';
 import { useToast } from '../contexts/ToastContext';
 import { useCart } from '../hooks/useCart';
+import { getApiError } from '../api/api-error';
 
 export const ProductsPage: React.FC = () => {
   const [products, setProducts] = useState<ProductResponse[]>([]);
@@ -64,7 +65,8 @@ export const ProductsPage: React.FC = () => {
       
       setError(null);
     } catch (err) {
-      setError('Failed to load products');
+      const apiError = getApiError(err);
+      setError(apiError?.message || 'Failed to load products');
       console.error('Fetch products error:', err);
     } finally {
       setLoading(false);
@@ -76,9 +78,10 @@ export const ProductsPage: React.FC = () => {
       const productController = getProductController();
       const productsResponse = await productController.getProducts(filters);
       setProducts(productsResponse.data);
-    } catch (err: any) {
+    } catch (err) {
+      const apiError = getApiError(err);
       console.error('Fetch products error:', err);
-      setError(`Failed to load products: ${err.message || 'Unknown error'}`);
+      setError(apiError?.message || 'Failed to load products');
     }
   };
 
@@ -100,7 +103,18 @@ export const ProductsPage: React.FC = () => {
       showToast(`"${productTitle}" added to cart!`, 'success');
       await refreshCart();
     } catch (err) {
-      showToast('Failed to add to cart', 'error');
+      const apiError = getApiError(err);
+
+      if (apiError?.code === 'InsufficientStockException') {
+        showToast(apiError.message || 'Insufficient stock for this product.', 'warning');
+        await refreshCart();
+      } else {
+        showToast(
+          apiError?.message || 'Failed to add to cart',
+          apiError && apiError.status >= 500 ? 'error' : 'warning'
+        );
+      }
+
       console.error('Add to cart error:', err);
     }
   };

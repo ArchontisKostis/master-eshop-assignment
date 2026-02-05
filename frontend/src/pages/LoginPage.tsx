@@ -15,6 +15,7 @@ import { Login as LoginIcon } from '@mui/icons-material';
 import { useAuth } from '../contexts/AuthContext';
 import { ROUTES } from '../constants/routes';
 import { getDashboardRoute } from '../utils/navigation';
+import { getApiError, getErrorMessage } from '../api/api-error';
 
 export const LoginPage: React.FC = () => {
   const [loading, setLoading] = useState(false);
@@ -80,7 +81,14 @@ export const LoginPage: React.FC = () => {
         navigate(from || dashboardRoute, { replace: true });
       }, 100);
     } catch (err) {
-      setError('Invalid username or password. Please try again.');
+      const apiError = getApiError(err);
+
+      if (apiError && (apiError.status === 400 || apiError.status === 401)) {
+        setError(apiError.message || 'Invalid username or password. Please try again.');
+      } else {
+        setError(getErrorMessage(err, 'Login failed. Please try again.'));
+      }
+
       console.error('Login error:', err);
     } finally {
       setLoading(false);

@@ -19,6 +19,7 @@ import { getStoreController } from '../api/store-controller/store-controller';
 import type { StoreResponse } from '../api/generated.schemas';
 import { StoreDetailPage } from './StoreDetailPage';
 import { ROUTES } from '../constants/routes';
+import { getApiError } from '../api/api-error';
 
 export const MarketplacePage: React.FC = () => {
   const [searchParams] = useSearchParams();
@@ -47,7 +48,8 @@ export const MarketplacePage: React.FC = () => {
       setStores(response.data);
       setError(null);
     } catch (err) {
-      setError('Failed to load stores');
+      const apiError = getApiError(err);
+      setError(apiError?.message || 'Failed to load stores');
       console.error('Fetch stores error:', err);
     } finally {
       setLoading(false);

@@ -15,6 +15,7 @@ import { ArrowBack, Add } from '@mui/icons-material';
 import { getProductController } from '../api/product-controller/product-controller';
 import type { AddProductRequest } from '../api/generated.schemas';
 import { ROUTES } from '../constants/routes';
+import { getApiError } from '../api/api-error';
 
 export const AddProductPage: React.FC = () => {
   const [loading, setLoading] = useState(false);
@@ -127,7 +128,8 @@ export const AddProductPage: React.FC = () => {
         navigate(ROUTES.STORE_PRODUCTS);
       }, 2000);
     } catch (err) {
-      setError('Failed to add product. Please try again.');
+      const apiError = getApiError(err);
+      setError(apiError?.message || 'Failed to add product. Please try again.');
       console.error('Add product error:', err);
     } finally {
       setLoading(false);

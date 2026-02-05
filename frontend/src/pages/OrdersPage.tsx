@@ -26,6 +26,7 @@ import {
 } from '@mui/icons-material';
 import { getOrderController } from '../api/order-controller/order-controller';
 import type { OrderResponse } from '../api/generated.schemas';
+import { getApiError } from '../api/api-error';
 
 export const OrdersPage: React.FC = () => {
   const [orders, setOrders] = useState<OrderResponse[]>([]);
@@ -48,7 +49,8 @@ export const OrdersPage: React.FC = () => {
       setOrders(sortedOrders);
       setError(null);
     } catch (err) {
-      setError('Failed to load orders');
+      const apiError = getApiError(err);
+      setError(apiError?.message || 'Failed to load orders');
       console.error('Fetch orders error:', err);
     } finally {
       setLoading(false);

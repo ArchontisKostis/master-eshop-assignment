@@ -25,6 +25,7 @@ import { ProductFilters } from '../components/products/ProductFilters';
 import { useToast } from '../contexts/ToastContext';
 import { useCart } from '../hooks/useCart';
 import { ROUTES } from '../constants/routes';
+import { getApiError } from '../api/api-error';
 
 export const StoreDetailPage: React.FC = () => {
   const [searchParams] = useSearchParams();
@@ -86,9 +87,10 @@ export const StoreDetailPage: React.FC = () => {
       setProducts(productsResponse.data);
 
       setError(null);
-    } catch (err: any) {
+    } catch (err) {
+      const apiError = getApiError(err);
       console.error('Fetch store data error:', err);
-      setError(`Failed to load store information: ${err.message || 'Unknown error'}`);
+      setError(apiError?.message || 'Failed to load store information');
     } finally {
       setLoading(false);
     }
@@ -101,9 +103,10 @@ export const StoreDetailPage: React.FC = () => {
       const productController = getProductController();
       const productsResponse = await productController.getProducts(filters);
       setProducts(productsResponse.data);
-    } catch (err: any) {
+    } catch (err) {
+      const apiError = getApiError(err);
       console.error('Fetch products error:', err);
-      setError(`Failed to load products: ${err.message || 'Unknown error'}`);
+      setError(apiError?.message || 'Failed to load products');
     }
   };
 
@@ -136,7 +139,18 @@ export const StoreDetailPage: React.FC = () => {
       // Refresh cart to update badge count
       await refreshCart();
     } catch (err) {
-      showToast('Failed to add to cart', 'error');
+      const apiError = getApiError(err);
+
+      if (apiError?.code === 'InsufficientStockException') {
+        showToast(apiError.message || 'Insufficient stock for this product.', 'warning');
+        await refreshCart();
+      } else {
+        showToast(
+          apiError?.message || 'Failed to add to cart',
+          apiError && apiError.status >= 500 ? 'error' : 'warning'
+        );
+      }
+
       console.error('Add to cart error:', err);
     }
   };

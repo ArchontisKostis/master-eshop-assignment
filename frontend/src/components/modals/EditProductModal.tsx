@@ -12,6 +12,7 @@ import {
 import { getProductController } from '../../api/product-controller/product-controller';
 import type { AddProductRequest, ProductResponse } from '../../api/generated.schemas';
 import { useToast } from '../../contexts/ToastContext';
+import { getApiError } from '../../api/api-error';
 
 interface EditProductModalProps {
   open: boolean;
@@ -132,7 +133,8 @@ export const EditProductModal: React.FC<EditProductModalProps> = ({
       onSuccess();
       onClose();
     } catch (err) {
-      showToast('Failed to update product. Please try again.', 'error');
+      const apiError = getApiError(err);
+      showToast(apiError?.message || 'Failed to update product. Please try again.', 'error');
       console.error('Update product error:', err);
     } finally {
       setLoading(false);

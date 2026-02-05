@@ -26,6 +26,7 @@ import type { CartItemResponse } from '../api/generated.schemas';
 import { useToast } from '../contexts/ToastContext';
 import { useCart } from '../hooks/useCart';
 import { ROUTES } from '../constants/routes';
+import { getApiError } from '../api/api-error';
 
 export const CartPage: React.FC = () => {
   const { cart, loading, refreshCart } = useCart();
@@ -41,7 +42,22 @@ export const CartPage: React.FC = () => {
       await refreshCart();
       showToast('Cart updated', 'success');
     } catch (err) {
-      showToast('Failed to update cart', 'error');
+      const apiError = getApiError(err);
+
+      if (apiError) {
+        if (apiError.code === 'InsufficientStockException') {
+          showToast(apiError.message || 'Insufficient stock for this product.', 'warning');
+          await refreshCart();
+        } else {
+          showToast(
+            apiError.message || 'Failed to update cart',
+            apiError.status >= 500 ? 'error' : 'warning'
+          );
+        }
+      } else {
+        showToast('Failed to update cart', 'error');
+      }
+
       console.error('Update cart error:', err);
     }
   };
@@ -57,7 +73,13 @@ export const CartPage: React.FC = () => {
       await refreshCart();
       showToast('Item removed from cart', 'success');
     } catch (err) {
-      showToast('Failed to remove item', 'error');
+      const apiError = getApiError(err);
+
+      showToast(
+        apiError?.message || 'Failed to remove item',
+        apiError && apiError.status >= 500 ? 'error' : 'warning'
+      );
+
       console.error('Remove from cart error:', err);
     }
   };
