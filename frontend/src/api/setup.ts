@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { getApiErrorAsync } from './api-error';
 
 /**
  * API Setup
@@ -32,13 +33,21 @@ axios.interceptors.request.use(
 // Response interceptor for error handling
 axios.interceptors.response.use(
   (response) => response,
-  (error) => {
+  async (error) => {
     if (error.response?.status === 401) {
       // Token expired or invalid - clear auth and redirect to login
       localStorage.removeItem('token');
       localStorage.removeItem('user');
       window.location.href = '/login';
     }
+
+    // Attach parsed ApiError (if available) so callers can branch on status/code.
+    // This works even when generated clients use `responseType: 'blob'`.
+    const apiError = await getApiErrorAsync(error);
+    if (apiError) {
+      (error as any).apiError = apiError;
+    }
+
     return Promise.reject(error);
   }
 );
