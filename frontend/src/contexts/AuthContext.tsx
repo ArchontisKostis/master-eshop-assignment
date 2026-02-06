@@ -2,8 +2,14 @@ import React, { createContext, useContext, useState, useEffect, useCallback } fr
 import type { User, AuthState, LoginCredentials, RegisterData } from '../types/auth';
 import { UserRole } from '../types/auth';
 import { getAuthController } from '../api/auth-controller/auth-controller';
-import type { RegisterRequest, LoginRequest } from '../api/generated.schemas';
+import type {
+  RegisterRequest,
+  LoginRequest,
+  RegisterResponse,
+  LoginResponse,
+} from '../api/generated.schemas';
 import { ROUTES } from '../constants/routes';
+import { parseJsonFromBlob } from '../api/blob-utils';
 
 interface AuthContextType extends AuthState {
   login: (credentials: LoginCredentials) => Promise<void>;
@@ -62,17 +68,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         username: credentials.username,
         password: credentials.password,
       };
-      
+
       const response = await authController.login(loginRequest);
-      
+      const data = await parseJsonFromBlob<LoginResponse>(response.data);
+
       const user: User = {
-        id: '1', // Backend doesn't return ID in LoginResponse, using placeholder
-        username: response.data.username || credentials.username,
-        email: response.data.email || '',
-        role: response.data.role as UserRole || UserRole.CUSTOMER,
+        id: typeof data.id === 'number' ? data.id : null,
+        username: data.username || credentials.username,
+        email: data.email || '',
+        role: (data.role as UserRole) || UserRole.CUSTOMER,
       };
-      
-      const token = response.data.token || '';
+
+      const token = data.token || '';
 
       // Store in localStorage
       localStorage.setItem('token', token);
@@ -97,17 +104,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       const authController = getAuthController();
       const registerRequest: RegisterRequest = data as RegisterRequest;
-      
+
       const response = await authController.register(registerRequest);
-      
+      const registerResponse = await parseJsonFromBlob<RegisterResponse>(response.data);
+
       // After successful registration, automatically log in
-      // Note: Backend returns user info but not token in RegisterResponse
-      // You may want to automatically call login or handle this differently
       const user: User = {
-        id: '1', // Backend doesn't return ID
-        username: response.data.username || data.username,
-        email: response.data.email || data.email,
-        role: response.data.role as UserRole || data.role,
+        id: null, 
+        username: registerResponse.username || data.username,
+        email: registerResponse.email || data.email,
+        role: (registerResponse.role as UserRole) || data.role,
       };
 
       // Since backend doesn't return token on register, we store user without token

@@ -20,6 +20,7 @@ import type { StoreResponse } from '../api/generated.schemas';
 import { StoreDetailPage } from './StoreDetailPage';
 import { ROUTES } from '../constants/routes';
 import { getApiError } from '../api/api-error';
+import { parseJsonFromBlob } from '../api/blob-utils';
 
 export const MarketplacePage: React.FC = () => {
   const [searchParams] = useSearchParams();
@@ -45,7 +46,8 @@ export const MarketplacePage: React.FC = () => {
       setLoading(true);
       const storeController = getStoreController();
       const response = await storeController.getAllStores();
-      setStores(response.data);
+      const storesData = await parseJsonFromBlob<StoreResponse[]>(response.data);
+      setStores(storesData);
       setError(null);
     } catch (err) {
       const apiError = getApiError(err);

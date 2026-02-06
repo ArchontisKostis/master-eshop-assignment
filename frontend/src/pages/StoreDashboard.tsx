@@ -28,6 +28,7 @@ import { getProductController } from '../api/product-controller/product-controll
 import { getOrderController } from '../api/order-controller/order-controller';
 import type { ProductResponse, OrderResponse } from '../api/generated.schemas';
 import { ROUTES } from '../constants/routes';
+import { parseJsonFromBlob } from '../api/blob-utils';
 
 export const StoreDashboard: React.FC = () => {
   const [products, setProducts] = useState<ProductResponse[]>([]);
@@ -45,12 +46,14 @@ export const StoreDashboard: React.FC = () => {
       // Fetch store products
       const productController = getProductController();
       const productsResponse = await productController.getStoreProducts();
-      setProducts(productsResponse.data);
+      const productsData = await parseJsonFromBlob<ProductResponse[]>(productsResponse.data);
+      setProducts(productsData);
 
       // Fetch store orders
       const orderController = getOrderController();
       const ordersResponse = await orderController.getStoreOrders();
-      setOrders(ordersResponse.data);
+      const ordersData = await parseJsonFromBlob<OrderResponse[]>(ordersResponse.data);
+      setOrders(ordersData);
     } catch (err) {
       console.error('Failed to fetch dashboard data:', err);
     } finally {

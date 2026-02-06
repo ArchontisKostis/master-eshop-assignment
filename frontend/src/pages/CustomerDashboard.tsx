@@ -30,6 +30,7 @@ import { getOrderController } from '../api/order-controller/order-controller';
 import { getProductController } from '../api/product-controller/product-controller';
 import type { OrderResponse, ProductResponse } from '../api/generated.schemas';
 import { ROUTES } from '../constants/routes';
+import { parseJsonFromBlob } from '../api/blob-utils';
 
 export const CustomerDashboard: React.FC = () => {
   const { cart, itemCount } = useCart();
@@ -48,13 +49,15 @@ export const CustomerDashboard: React.FC = () => {
       // Fetch orders
       const orderController = getOrderController();
       const ordersResponse = await orderController.getCustomerOrders();
-      setOrders(ordersResponse.data);
+      const ordersData = await parseJsonFromBlob<OrderResponse[]>(ordersResponse.data);
+      setOrders(ordersData);
 
       // Fetch recommended products (latest 3 products from all stores)
       const productController = getProductController();
       const productsResponse = await productController.getProducts({});
+      const productsData = await parseJsonFromBlob<ProductResponse[]>(productsResponse.data);
       // Get first 3 products as "recommended"
-      setRecommendedProducts(productsResponse.data.slice(0, 3));
+      setRecommendedProducts(productsData.slice(0, 3));
     } catch (err) {
       console.error('Failed to fetch dashboard data:', err);
     } finally {

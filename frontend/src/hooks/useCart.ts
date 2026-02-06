@@ -1,7 +1,8 @@
 import { useState, useEffect, useCallback } from 'react';
 import { getShoppingCartController } from '../api/shopping-cart-controller/shopping-cart-controller';
-import type { CartResponse } from '../api/generated.schemas';
+import type { CartResponse, CartItemResponse } from '../api/generated.schemas';
 import { getApiError } from '../api/api-error';
+import { parseJsonFromBlob } from '../api/blob-utils';
 
 /**
  * Custom hook for cart management
@@ -17,10 +18,14 @@ export const useCart = () => {
       setLoading(true);
       const cartController = getShoppingCartController();
       const response = await cartController.getCart();
-      setCart(response.data);
-      
+      const cartData = await parseJsonFromBlob<CartResponse | null>(response.data);
+      setCart(cartData);
+
       // Calculate total item count
-      const count = response.data.items?.reduce((sum, item) => sum + (item.quantity || 0), 0) || 0;
+      const count =
+        (cartData?.items ?? []).reduce((sum: number, item: CartItemResponse) => {
+          return sum + (item.quantity || 0);
+        }, 0) || 0;
       setItemCount(count);
     } catch (err) {
       const apiError = getApiError(err);

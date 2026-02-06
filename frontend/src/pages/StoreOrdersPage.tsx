@@ -27,6 +27,7 @@ import {
 } from '@mui/icons-material';
 import { getOrderController } from '../api/order-controller/order-controller';
 import type { OrderResponse } from '../api/generated.schemas';
+import { parseJsonFromBlob } from '../api/blob-utils';
 
 export const StoreOrdersPage: React.FC = () => {
   const [orders, setOrders] = useState<OrderResponse[]>([]);
@@ -46,8 +47,9 @@ export const StoreOrdersPage: React.FC = () => {
       setLoading(true);
       const orderController = getOrderController();
       const response = await orderController.getStoreOrders();
+      const ordersData = await parseJsonFromBlob<OrderResponse[]>(response.data);
       // Sort by date (newest first)
-      const sortedOrders = response.data.sort((a, b) => {
+      const sortedOrders = ordersData.sort((a: OrderResponse, b: OrderResponse) => {
         return new Date(b.orderDate!).getTime() - new Date(a.orderDate!).getTime();
       });
       setOrders(sortedOrders);

@@ -21,6 +21,7 @@ import { ProductFilters } from '../components/products/ProductFilters';
 import { useToast } from '../contexts/ToastContext';
 import { useCart } from '../hooks/useCart';
 import { getApiError } from '../api/api-error';
+import { parseJsonFromBlob } from '../api/blob-utils';
 
 export const ProductsPage: React.FC = () => {
   const [products, setProducts] = useState<ProductResponse[]>([]);
@@ -53,15 +54,18 @@ export const ProductsPage: React.FC = () => {
       
       // Fetch stores for store filter
       const storesResponse = await storeController.getAllStores();
-      setStores(storesResponse.data);
+      const storesData = await parseJsonFromBlob<StoreResponse[]>(storesResponse.data);
+      setStores(storesData);
       
       // Fetch ALL products for brand extraction
       const allProductsResponse = await productController.getProducts({});
-      setAllProducts(allProductsResponse.data);
+      const allProductsData = await parseJsonFromBlob<ProductResponse[]>(allProductsResponse.data);
+      setAllProducts(allProductsData);
       
       // Fetch filtered products
       const productsResponse = await productController.getProducts(filters);
-      setProducts(productsResponse.data);
+      const productsData = await parseJsonFromBlob<ProductResponse[]>(productsResponse.data);
+      setProducts(productsData);
       
       setError(null);
     } catch (err) {
@@ -77,7 +81,8 @@ export const ProductsPage: React.FC = () => {
     try {
       const productController = getProductController();
       const productsResponse = await productController.getProducts(filters);
-      setProducts(productsResponse.data);
+      const productsData = await parseJsonFromBlob<ProductResponse[]>(productsResponse.data);
+      setProducts(productsData);
     } catch (err) {
       const apiError = getApiError(err);
       console.error('Fetch products error:', err);

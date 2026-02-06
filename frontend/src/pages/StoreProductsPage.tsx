@@ -29,6 +29,7 @@ import type { ProductResponse } from '../api/generated.schemas';
 import { UpdateStockModal } from '../components/modals/UpdateStockModal';
 import { EditProductModal } from '../components/modals/EditProductModal';
 import { ROUTES } from '../constants/routes';
+import { parseJsonFromBlob } from '../api/blob-utils';
 
 export const StoreProductsPage: React.FC = () => {
   const [products, setProducts] = useState<ProductResponse[]>([]);
@@ -52,7 +53,8 @@ export const StoreProductsPage: React.FC = () => {
       setLoading(true);
       const productController = getProductController();
       const response = await productController.getStoreProducts();
-      setProducts(response.data);
+      const productsData = await parseJsonFromBlob<ProductResponse[]>(response.data);
+      setProducts(productsData);
       setError(null);
     } catch (err) {
       setError('Failed to load products');
