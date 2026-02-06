@@ -8,6 +8,11 @@ import lombok.NoArgsConstructor;
 import java.math.BigDecimal;
 import java.util.List;
 
+/**
+ * DTO for representing the contents of a shopping cart.
+ * This class contains fields for the cart ID, a list of cart items, and the total price of the items in the cart.
+ * The CartItemResponse inner class represents individual items in the cart, including product details and subtotal.
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

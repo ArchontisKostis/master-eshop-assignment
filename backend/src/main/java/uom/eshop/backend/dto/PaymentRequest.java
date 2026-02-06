@@ -8,6 +8,10 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * DTO for representing a payment request.
+ * This class contains fields for the card number, cardholder name, expiry date, and CVV, along with validation annotations to ensure that all required information is provided and formatted correctly when processing a payment.
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

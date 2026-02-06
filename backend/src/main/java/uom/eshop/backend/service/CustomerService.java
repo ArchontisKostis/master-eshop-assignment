@@ -16,6 +16,10 @@ import uom.eshop.backend.repository.ShoppingCartRepository;
 
 import java.math.BigDecimal;
 
+/**
+ * Service responsible for handling customer-related business logic.
+ * It provides methods to retrieve customer statistics such as shopping cart details and order history.
+ */
 @Service
 @RequiredArgsConstructor
 public class CustomerService {

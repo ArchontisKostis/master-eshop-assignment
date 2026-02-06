@@ -13,6 +13,10 @@ import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
 
+/**
+ * Utility class for generating and validating JWT tokens.
+ * It uses the secret key and expiration time defined in JwtProperties.
+ */
 @Component
 @RequiredArgsConstructor
 @Slf4j

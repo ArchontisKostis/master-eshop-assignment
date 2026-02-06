@@ -21,6 +21,11 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Service responsible for handling store-related business logic.
+ * It provides methods to retrieve store statistics and recent orders.
+ * The service ensures that only authenticated store owners can access their store data.
+ */
 @Service
 @RequiredArgsConstructor
 public class StoreService {

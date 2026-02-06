@@ -9,6 +9,11 @@ import org.springframework.http.HttpStatus;
 
 import java.time.Instant;
 
+/**
+ * DTO for representing API error responses.
+ * This class contains fields for the error details, including timestamp, status code, error message, and request path.
+ * It also includes static factory methods for creating ApiError instances based on HttpStatus and error messages.
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

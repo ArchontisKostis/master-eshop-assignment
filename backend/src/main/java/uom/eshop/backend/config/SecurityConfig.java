@@ -19,6 +19,10 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfigurationSource;
 import uom.eshop.backend.security.JwtAuthenticationFilter;
 
+/**
+ * Security configuration class for the e-commerce application.
+ * This class sets up JWT-based authentication, CORS configuration, and defines security rules for API endpoints.
+ */
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity

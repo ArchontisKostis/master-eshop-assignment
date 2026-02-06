@@ -6,6 +6,10 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * DTO for representing a login request.
+ * This class contains fields for the username and password, along with validation annotations to ensure that both fields are provided when attempting to log in.
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

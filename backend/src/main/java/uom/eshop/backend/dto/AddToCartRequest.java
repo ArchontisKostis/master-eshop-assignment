@@ -7,6 +7,10 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * DTO for adding a product to the shopping cart.
+ * This class contains validation annotations to ensure that the product ID and quantity are valid when adding an item to the cart.
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

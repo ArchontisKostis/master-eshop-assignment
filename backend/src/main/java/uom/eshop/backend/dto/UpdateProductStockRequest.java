@@ -7,6 +7,10 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * DTO for updating the stock quantity of a product.
+ * This class contains a field for the new stock quantity, along with validation annotations to ensure that the quantity is provided and is not negative.
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

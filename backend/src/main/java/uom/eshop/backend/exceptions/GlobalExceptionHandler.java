@@ -10,6 +10,12 @@ import uom.eshop.backend.dto.ApiError;
 
 import java.util.stream.Collectors;
 
+/**
+ * Global exception handler for the e-shop backend application.
+ * This class uses @ControllerAdvice to handle exceptions thrown by controllers and return consistent error responses in the form of ApiError objects.
+ * It includes handlers for specific exceptions such as NotFoundException, BadRequestException, ConflictException, ForbiddenException, BusinessRuleException, InsufficientStockException,
+ * as well as a generic handler for any unhandled exceptions.
+ */
 @ControllerAdvice
 public class GlobalExceptionHandler {
 

@@ -7,6 +7,9 @@ import uom.eshop.backend.model.User;
 
 import java.util.Optional;
 
+/**
+ * Repository interface for managing Customer entities in the e-shop application.
+ */
 @Repository
 public interface CustomerRepository extends JpaRepository<Customer, Long> {
     

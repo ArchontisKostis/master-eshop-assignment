@@ -8,6 +8,10 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.Arrays;
 
+/**
+ * Configuration class to set up CORS (Cross-Origin Resource Sharing) for the application.
+ * This allows the frontend (which may be served from a different origin) to make requests to the backend.
+ */
 @Configuration
 public class CorsConfig {
 

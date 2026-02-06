@@ -9,6 +9,9 @@ import uom.eshop.backend.model.ShoppingCart;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Repository interface for managing CartItem entities.
+ */
 @Repository
 public interface CartItemRepository extends JpaRepository<CartItem, Long> {
     

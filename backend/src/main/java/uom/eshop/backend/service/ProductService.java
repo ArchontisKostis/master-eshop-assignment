@@ -27,6 +27,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Service responsible for handling product-related business logic.
+ * It provides methods to add, update, delete, and retrieve products.
+ * The service also includes functionality to search for products based on various criteria and to get personalized product recommendations for customers.
+ */
 @Service
 @RequiredArgsConstructor
 public class ProductService {

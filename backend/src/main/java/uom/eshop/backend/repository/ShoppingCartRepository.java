@@ -7,6 +7,9 @@ import uom.eshop.backend.model.ShoppingCart;
 
 import java.util.Optional;
 
+/**
+ * Repository interface for managing ShoppingCart entities in the e-shop application.
+ */
 @Repository
 public interface ShoppingCartRepository extends JpaRepository<ShoppingCart, Long> {
     

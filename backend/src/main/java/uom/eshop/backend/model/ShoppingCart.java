@@ -10,6 +10,10 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Entity representing a shopping cart in the e-commerce application.
+ * Each shopping cart is associated with a single customer and can contain multiple cart items. The total price of the cart is calculated based on the subtotals of the individual cart items.
+ */
 @Entity
 @Table(name = "shopping_carts")
 @Data

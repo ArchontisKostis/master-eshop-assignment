@@ -9,6 +9,11 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Specification class for building dynamic queries to filter products based on various criteria.
+ * It provides methods to create specifications for filtering by title, type, brand, price range, and store ID.
+ * The main method `filterProducts` combines all individual specifications into a single specification that can be used in repository queries.
+ */
 public class ProductSpecification {
 
     public static Specification<Product> filterProducts(ProductSearchRequest request) {

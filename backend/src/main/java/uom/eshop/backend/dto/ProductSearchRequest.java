@@ -7,6 +7,10 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 
+/**
+ * DTO for representing a product search request.
+ * This class contains fields for the search criteria, including the product title, type, brand, minimum price, maximum price, and store ID. It is used to transfer search parameters from the frontend to the backend when searching for products.
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

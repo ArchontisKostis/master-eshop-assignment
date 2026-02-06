@@ -12,6 +12,11 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Entity representing an order in the e-commerce system.
+ * This class contains fields for the order ID, associated customer and store, total price, order date, status, and a list of order items.
+ * It uses JPA annotations to define the entity and its relationships with other entities in the system.
+ */
 @Entity
 @Table(name = "orders")
 @Data

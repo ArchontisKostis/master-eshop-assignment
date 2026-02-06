@@ -10,6 +10,10 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 
+/**
+ * Entity representing an item in the shopping cart.
+ * This class contains fields for the cart item ID, the associated shopping cart, the product being added to the cart, the quantity of the product, and the subtotal price for that item. It also includes a helper method to calculate the subtotal based on the product price and quantity.
+ */
 @Entity
 @Table(name = "cart_items")
 @Data

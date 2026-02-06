@@ -15,6 +15,12 @@ import uom.eshop.backend.repository.*;
 
 import java.math.BigDecimal;
 
+/**
+ * Service responsible for handling user-related business logic.
+ * It provides methods for user registration and loading user details for authentication.
+ * The service ensures that all necessary validations are performed during registration, including uniqueness of username, email, and tax ID.
+ * It also creates the appropriate profile (customer or store) based on the user's role and initializes a shopping cart for customers.
+ */
 @Service
 @RequiredArgsConstructor
 public class UserService implements UserDetailsService {

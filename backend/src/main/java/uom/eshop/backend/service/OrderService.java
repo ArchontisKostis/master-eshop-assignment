@@ -20,6 +20,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+/**
+ * Service responsible for handling order-related business logic.
+ * It provides methods to complete orders, retrieve customer orders, and get order details.
+ * The service ensures that stock levels are validated and updated accordingly when completing an order.
+ */
 @Service
 @RequiredArgsConstructor
 public class OrderService {

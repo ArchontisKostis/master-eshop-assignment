@@ -17,6 +17,10 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
+/**
+ * Filter that intercepts incoming HTTP requests to extract and validate JWT tokens.
+ * If a valid token is found, it sets the authentication in the security context.
+ */
 @Component
 @RequiredArgsConstructor
 @Slf4j

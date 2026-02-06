@@ -13,6 +13,9 @@ import uom.eshop.backend.model.Store;
 import java.math.BigDecimal;
 import java.util.List;
 
+/**
+ * Repository interface for managing Order entities in the e-commerce system.
+ */
 @Repository
 public interface OrderRepository extends JpaRepository<Order, Long> {
     

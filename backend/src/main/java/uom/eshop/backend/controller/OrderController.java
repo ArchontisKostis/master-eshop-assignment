@@ -21,6 +21,10 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+/**
+ * Controller for handling order-related endpoints.
+ * This controller provides endpoints for customers to complete orders, view their orders, and for store owners to view orders related to their store.
+ */
 @RestController
 @RequestMapping("/api/orders")
 @RequiredArgsConstructor
@@ -30,6 +34,14 @@ public class OrderController {
     private final StoreRepository storeRepository;
     private final OrderRepository orderRepository;
 
+    /**
+     * Endpoint for checking out and completing an order.
+     * This endpoint simulates payment processing and then completes the order for the authenticated customer.
+     *
+     * @param paymentRequest the payment request containing payment details
+     * @param authentication the authentication object containing the authenticated user's details
+     * @return ResponseEntity containing the CheckoutResponse with payment status and order details
+     */
     @PostMapping("/checkout")
     @PreAuthorize("hasRole('CUSTOMER')")
     public ResponseEntity<CheckoutResponse> checkout(
@@ -52,6 +64,13 @@ public class OrderController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
+    /**
+     * Endpoint for completing an order after the payment simulation.
+     * This endpoint completes the order for the authenticated customer and returns the order details.
+     *
+     * @param authentication the authentication object containing the authenticated user's details
+     * @return ResponseEntity containing the list of OrderResponse with order details
+     */
     @PostMapping
     @PreAuthorize("hasRole('CUSTOMER')")
     public ResponseEntity<List<OrderResponse>> completeOrder(Authentication authentication) {
@@ -59,6 +78,13 @@ public class OrderController {
         return ResponseEntity.status(HttpStatus.CREATED).body(orders);
     }
 
+    /**
+     * Endpoint for retrieving the authenticated customer's orders.
+     * This endpoint returns a list of orders associated with the authenticated customer.
+     *
+     * @param authentication the authentication object containing the authenticated user's details
+     * @return ResponseEntity containing the list of OrderResponse with order details
+     */
     @GetMapping
     @PreAuthorize("hasRole('CUSTOMER')")
     public ResponseEntity<List<OrderResponse>> getCustomerOrders(Authentication authentication) {
@@ -66,6 +92,14 @@ public class OrderController {
         return ResponseEntity.ok(orders);
     }
 
+    /**
+     * Endpoint for retrieving the authenticated customer's recent orders.
+     * This endpoint returns a list of recent orders associated with the authenticated customer, limited by the specified number.
+     *
+     * @param limit the maximum number of recent orders to return (default is 5)
+     * @param authentication the authentication object containing the authenticated user's details
+     * @return ResponseEntity containing the list of OrderResponse with recent order details
+     */
     @GetMapping("/recent")
     @PreAuthorize("hasRole('CUSTOMER')")
     public ResponseEntity<List<OrderResponse>> getRecentOrders(
@@ -75,6 +109,13 @@ public class OrderController {
         return ResponseEntity.ok(orders);
     }
 
+    /**
+     * Endpoint for retrieving orders related to the authenticated store owner.
+     * This endpoint returns a list of orders associated with the store owned by the authenticated user.
+     *
+     * @param authentication the authentication object containing the authenticated user's details
+     * @return ResponseEntity containing the list of OrderResponse with order details related to the store
+     */
     @GetMapping("/store")
     @PreAuthorize("hasRole('STORE')")
     public ResponseEntity<List<OrderResponse>> getStoreOrders(Authentication authentication) {
@@ -111,6 +152,14 @@ public class OrderController {
         return ResponseEntity.ok(orders);
     }
 
+    /**
+     * Endpoint for retrieving a specific order by its ID.
+     * This endpoint returns the details of the specified order if it belongs to the authenticated customer or is related to the authenticated store.
+     *
+     * @param id the ID of the order to retrieve
+     * @param authentication the authentication object containing the authenticated user's details
+     * @return ResponseEntity containing the OrderResponse with order details
+     */
     @GetMapping("/{id}")
     public ResponseEntity<OrderResponse> getOrderById(
             @PathVariable Long id,
@@ -119,6 +168,13 @@ public class OrderController {
         return ResponseEntity.ok(order);
     }
 
+    /**
+     * Helper method that simulates payment processing for the given payment request.
+     * This is a dummy implementation that always succeeds and generates a random transaction ID.
+     *
+     * @param paymentRequest the payment request containing payment details
+     * @return a string representing the transaction ID of the simulated payment
+     */
     private String simulatePaymentProcessing(PaymentRequest paymentRequest) {
         // Dummy payment simulation - always succeeds!
         // In a real system, this would call a payment gateway

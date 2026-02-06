@@ -11,6 +11,10 @@ import uom.eshop.backend.dto.LoginResponse;
 import uom.eshop.backend.model.User;
 import uom.eshop.backend.security.JwtTokenProvider;
 
+/**
+ * Service responsible for handling authentication logic.
+ * It uses the AuthenticationManager to authenticate user credentials and the JwtTokenProvider to generate JWT tokens.
+ */
 @Service
 @RequiredArgsConstructor
 public class AuthService {

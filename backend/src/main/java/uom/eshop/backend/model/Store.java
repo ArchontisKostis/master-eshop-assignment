@@ -11,6 +11,11 @@ import lombok.NoArgsConstructor;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Entity representing a store in the e-commerce application.
+ * Each store has a unique tax ID, a name, an owner, and is associated with a user account.
+ * A store can have multiple products, which are represented by the Product entity.
+ */
 @Entity
 @Table(name = "stores", uniqueConstraints = {
     @UniqueConstraint(columnNames = "tax_id")

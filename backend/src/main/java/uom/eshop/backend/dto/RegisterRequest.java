@@ -10,6 +10,11 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import uom.eshop.backend.model.Role;
 
+/**
+ * DTO for representing a registration request.
+ * This class contains fields for the username, email, password, role, and additional information specific to customers or stores.
+ * Validation annotations are used to ensure that the required fields are provided and meet certain criteria when registering a new user.
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

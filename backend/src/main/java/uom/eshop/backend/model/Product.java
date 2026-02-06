@@ -9,6 +9,10 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 
+/**
+ * Entity class representing a product in the e-commerce application.
+ * This class is annotated with JPA annotations to define the mapping between the class and the database table. It includes fields for the product's title, type, brand, description, price, stock quantity, and a reference to the store it belongs to. Validation annotations are used to ensure that the data is valid when creating or updating a product.
+ */
 @Entity
 @Table(name = "products")
 @Data

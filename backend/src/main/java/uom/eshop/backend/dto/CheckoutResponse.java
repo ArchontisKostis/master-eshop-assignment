@@ -7,6 +7,10 @@ import lombok.NoArgsConstructor;
 
 import java.util.List;
 
+/**
+ * DTO for representing the response of a checkout operation.
+ * This class contains fields for the payment status, transaction ID, a message about the checkout result, and a list of orders that were processed during the checkout.
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

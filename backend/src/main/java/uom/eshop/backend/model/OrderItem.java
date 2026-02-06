@@ -10,6 +10,11 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 
+/**
+ * Entity representing an item in an order.
+ * This class contains fields for the product, quantity, price at purchase, and subtotal for the order item.
+ * It also includes a helper method to calculate the subtotal based on the price and quantity.
+ */
 @Entity
 @Table(name = "order_items")
 @Data

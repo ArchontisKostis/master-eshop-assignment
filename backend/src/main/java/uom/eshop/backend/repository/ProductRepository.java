@@ -11,6 +11,9 @@ import uom.eshop.backend.model.Store;
 
 import java.util.List;
 
+/**
+ * Repository interface for managing Product entities in the e-shop application.
+ */
 @Repository
 public interface ProductRepository extends JpaRepository<Product, Long>, JpaSpecificationExecutor<Product> {
     

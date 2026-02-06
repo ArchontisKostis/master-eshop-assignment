@@ -7,6 +7,9 @@ import uom.eshop.backend.model.OrderItem;
 
 import java.util.List;
 
+/**
+ * Repository interface for managing OrderItem entities in the e-commerce system.
+ */
 @Repository
 public interface OrderItemRepository extends JpaRepository<OrderItem, Long> {
     

@@ -15,6 +15,11 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Collection;
 import java.util.Collections;
 
+/**
+ * Entity representing a user in the e-commerce application.
+ * This class implements UserDetails to integrate with Spring Security for authentication and authorization purposes.
+ * It includes fields for username, email, password, and role, along with validation constraints to ensure data integrity.
+ */
 @Entity
 @Table(name = "users", uniqueConstraints = {
     @UniqueConstraint(columnNames = "username"),

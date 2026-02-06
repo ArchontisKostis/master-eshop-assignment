@@ -8,6 +8,11 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * Entity representing a customer in the e-commerce system.
+ * This class contains fields for the customer's tax ID, first name, last name, associated user account, and shopping cart.
+ * The tax ID is unique for each customer, and there is a one-to-one relationship with both the User and ShoppingCart entities.
+ */
 @Entity
 @Table(name = "customers", uniqueConstraints = {
     @UniqueConstraint(columnNames = "tax_id")

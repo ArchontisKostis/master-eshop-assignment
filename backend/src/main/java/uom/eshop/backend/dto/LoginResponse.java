@@ -5,6 +5,10 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * DTO for representing a login response.
+ * This class contains fields for the authentication token, token type, username, email, and role of the user who has successfully logged in.
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

@@ -8,6 +8,10 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 
+/**
+ * DTO for adding a new product to the store.
+ * This class contains validation annotations to ensure that the product details are valid when adding a new product.
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

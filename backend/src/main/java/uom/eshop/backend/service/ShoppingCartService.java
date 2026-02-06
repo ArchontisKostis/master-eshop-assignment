@@ -13,6 +13,11 @@ import uom.eshop.backend.repository.*;
 
 import java.util.stream.Collectors;
 
+/**
+ * Service responsible for handling shopping cart-related business logic.
+ * It provides methods to add products to the cart, retrieve the cart, update item quantities, and remove items from the cart.
+ * The service ensures that stock levels are validated when adding or updating cart items.
+ */
 @Service
 @RequiredArgsConstructor
 public class ShoppingCartService {
