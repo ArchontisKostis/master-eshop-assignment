@@ -52,3 +52,8 @@ This allows to run the backend and frontend locally while using the containerize
 ## Backend Seeding
 When running the application we have set up automatic seeding that fills the db with customers, stores and products data.
 See backend's readme for more info.
+
+## About This Project
+
+This project was developed as part of my Master's studies at the University of Macedonia. It is the semester assignment for the course **Cloud Development**.
+
