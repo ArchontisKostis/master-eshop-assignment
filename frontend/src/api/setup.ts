@@ -34,18 +34,35 @@ axios.interceptors.request.use(
 axios.interceptors.response.use(
   (response) => response,
   async (error) => {
-    if (error.response?.status === 401) {
-      // Token expired or invalid - clear auth and redirect to login
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
-      window.location.href = '/login';
-    }
+    const status = error.response?.status;
+    const config = error.config ?? {};
 
     // Attach parsed ApiError (if available) so callers can branch on status/code.
     // This works even when generated clients use `responseType: 'blob'`.
     const apiError = await getApiErrorAsync(error);
     if (apiError) {
       (error as any).apiError = apiError;
+    }
+
+    // For 401 responses, only auto-logout/redirect when we actually had a token,
+    // the failing call was NOT the login/register endpoints, and we're not already
+    // on the login/register pages. This prevents a full reload hiding inline errors
+    // on the auth screens.
+    if (status === 401) {
+      const hasToken = !!localStorage.getItem('token');
+      const url: string = typeof config.url === 'string' ? config.url : '';
+      const isAuthEndpoint =
+        url.includes('/api/auth/login') || url.includes('/api/auth/register');
+      const pathname = window.location.pathname || '';
+      const isAuthPage =
+        pathname.startsWith('/login') || pathname.startsWith('/register');
+
+      if (hasToken && !isAuthEndpoint && !isAuthPage) {
+        // Token expired or invalid - clear auth and redirect to login
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        window.location.href = '/login';
+      }
     }
 
     return Promise.reject(error);

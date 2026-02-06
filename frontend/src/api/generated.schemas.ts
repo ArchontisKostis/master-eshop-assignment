@@ -187,6 +187,7 @@ export interface LoginRequest {
 }
 
 export interface LoginResponse {
+  id?: number;
   token?: string;
   type?: string;
   username?: string;
