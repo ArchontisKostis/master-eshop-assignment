@@ -3,6 +3,7 @@ package uom.eshop.backend.exceptions;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -64,6 +65,14 @@ public class GlobalExceptionHandler {
             message = "Validation failed for request.";
         }
         ApiError body = ApiError.of(status, "ValidationException", message, request);
+        return ResponseEntity.status(status).body(body);
+    }
+
+    @ExceptionHandler(AuthenticationException.class)
+    public ResponseEntity<ApiError> handleAuthentication(AuthenticationException ex, HttpServletRequest request) {
+        HttpStatus status = HttpStatus.UNAUTHORIZED;
+        String message = "Invalid username or password.";
+        ApiError body = ApiError.of(status, "AuthenticationFailed", message, request);
         return ResponseEntity.status(status).body(body);
     }
 

@@ -34,11 +34,12 @@ public class AuthService {
         User user = (User) authentication.getPrincipal();
         String jwt = tokenProvider.generateToken(authentication);
 
-        return new LoginResponse(
-                jwt,
-                user.getUsername(),
-                user.getEmail(),
-                user.getRole().name()
-        );
+        return LoginResponse.builder()
+                .id(user.getId())
+                .token(jwt)
+                .username(user.getUsername())
+                .email(user.getEmail())
+                .role(user.getRole().name())
+                .build();
     }
 }
