@@ -3,7 +3,6 @@
 A full-stack e-commerce application with Spring Boot backend and React frontend.
 
 ## Video
-## Video
 
 [![Project Demo](https://img.youtube.com/vi/ymo9HWf4Wi4/0.jpg)](https://youtu.be/ymo9HWf4Wi4)
 
