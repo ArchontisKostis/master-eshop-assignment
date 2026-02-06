@@ -49,8 +49,6 @@ This allows to run the backend and frontend locally while using the containerize
 - [`docker-compose.yml`](docker-compose.yml) - Full stack Docker orchestration
 - [`docker-compose.dev.yml`](docker-compose.dev.yml) - Development mode (DB only)
 
-## Development
-
-For local development without Docker, see:
-- [Backend README](backend/README.md)
-- [Frontend README](frontend/README.md)
+## Backend Seeding
+When running the application we have set up automatic seeding that fills the db with customers, stores and products data.
+See backend's readme for more info.
