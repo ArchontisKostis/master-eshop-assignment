@@ -15,10 +15,11 @@ A simple React + Vite frontend for the E‑Shop system, providing customer and s
 - Node.js 18+ (recommended)
 - npm or yarn
 
-### Install dependencies
+### Install dependencies and configure environment
 
 ```bash
 cd frontend
+cp .env.example .env
 npm install
 ```
 
